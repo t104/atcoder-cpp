@@ -1,0 +1,12 @@
+{
+    "files.associations": {
+        "ostream": "cpp",
+        "*.tcc": "cpp",
+        "limits": "cpp",
+        "ratio": "cpp",
+        "regex": "cpp",
+        "iostream": "cpp",
+        "array": "cpp",
+        "string_view": "cpp"
+    }
+}
