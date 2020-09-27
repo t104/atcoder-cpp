@@ -34,3 +34,6 @@ a
 
 # Test input
 *.in
+
+# Temporary file
+combined.cpp
