@@ -17,9 +17,7 @@ int main() {
         for (int j = i+1; j < n-1; ++j) {
             for (int k = j+1; k < n; ++k) {
                 int ab = l.at(i) + l.at(j);
-                int bc = l.at(j) + l.at(k);
-                int ca = l.at(k) + l.at(i);
-                if (l.at(i) < bc && l.at(j) < ca && l.at(k) < ab) {
+                if (l.at(k) < ab) {
                     ans++;
                 }
             }
