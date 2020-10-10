@@ -2,35 +2,37 @@
 #define rep(i,n) for (int i = 0; i < (n); ++i)
 using namespace std;
 using ll = long long;
+using P = pair<int,int>;
+template<typename T> void chmax(T &a, T b) { a = max(a, b); }
+template<typename T> void chmin(T &a, T b) { a = min(a, b); }
 
-const ll maxk = LLONG_MAX;
-
-
+const int max_k = 1e5 + 5;
 
 int main() {
     int k;
     cin >> k;
-    int count = 0;
-    int ans = -1;
-    for(ll i = 1; i < maxk; i++){
-        bool run = true;
-        for(ll div = 1; i/(div*10) > 0; div *= 10){
-            if(abs(i/(div*10)%10 - (i/div)%10) > 1){
-                run = false;
-                i += div;
-                i -= i % div;
-                break;
-            }
+    deque<ll> q;
+    for (int i = 1; i <= 9; ++i) {
+        if (k == 0) break;
+        k--;
+        q.push_back(i);
+    }
+    while (k != 0) {
+        ll x = q.front(); q.pop_front();
+        ll qi = 10*x + x%10;
+        if (0 < k && x%10 != 0) {
+            q.push_back(qi-1);
+            k--;
         }
-        if(run) {
-            count++;
-            // cout << i << endl;
+        if (0 < k) {
+            q.push_back(qi);
+            k--;    
         }
-        if(count == k){
-            ans = i;
-            break;
+        if (0 < k && x%10 != 9) {
+            q.push_back(qi+1);
+            k--;
         }
     }
-    cout << ans << endl;
+    cout << q.back() << endl;
     return 0;
 }
