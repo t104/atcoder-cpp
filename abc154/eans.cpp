@@ -14,7 +14,9 @@ int main() {
     dp[0][0][0] = 1;
     rep(i,n)rep(j,4)rep(k,2) {
         int nd = s[i]-'0';
+        // 次のけた
         rep(d,10) {
+            // 次のけたの遷移先
             int ni = i+1, nj = j, nk = k;
             if(d != 0) nj++;
             if(nj > k) continue;
