@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-a
+[a-z]
 
 # Test input
 *.in
@@ -38,3 +38,5 @@ a
 # Temporary file
 combined.cpp
 .vscode/
+.DS_Store
+d.dSYM
