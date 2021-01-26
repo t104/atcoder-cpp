@@ -12,13 +12,21 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int a, b;
-    cin >> a >> b;
-    if ((a*b)%2 == 0) {
-        cout << "No" << endl;
+    int a, b, x, y;
+    cin >> a >> b >> x >> y;
+    if (a == b) {
+        cout << x << endl;
+        return 0;
+    }
+    int p = 0, q = 0;
+    if (b < a) {
+        p = x + (a - b - 1) * y;
+        q = (a-b) * 2 * x - x;
     }
     else {
-        cout << "Yes" << endl;
+        p = x + (b-a) * y;
+        q = (b-a) * 2 * x + x;
     }
+    cout << min(p,q) << endl;
     return 0;
 }

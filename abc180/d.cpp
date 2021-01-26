@@ -12,13 +12,15 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int a, b;
-    cin >> a >> b;
-    if ((a*b)%2 == 0) {
-        cout << "No" << endl;
+    ll x, y, a, b;
+    cin >> x >> y >> a >> b;
+    ll cnt = 0;
+    while (x < y/a + 1 && x * a < y && x * a < x + b) {
+        x *= a;
+        cnt++;
     }
-    else {
-        cout << "Yes" << endl;
-    }
+    cnt += (y-x-1) / b;
+
+    cout << cnt << endl;
     return 0;
 }

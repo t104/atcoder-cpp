@@ -12,13 +12,17 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int a, b;
-    cin >> a >> b;
-    if ((a*b)%2 == 0) {
-        cout << "No" << endl;
+    ll n;
+    cin >> n;
+    ll sum = 0, i = 1;
+    while (sum < n) {
+        sum += i;
+        ++i;
     }
-    else {
-        cout << "Yes" << endl;
+
+    for (ll j = 1; j < i; ++j) {
+        if (j == sum - n) continue;
+        cout << j << endl;
     }
     return 0;
 }

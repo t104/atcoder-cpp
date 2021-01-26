@@ -12,13 +12,26 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int a, b;
-    cin >> a >> b;
-    if ((a*b)%2 == 0) {
-        cout << "No" << endl;
+    int n;
+    cin >> n;
+    vector<int> x(n), y(n), z(n);
+    rep(i,n) {
+        cin >> x[i] >> y[i] >> z[i];
     }
-    else {
-        cout << "Yes" << endl;
+
+    vector<vector<int>> dp(1<<n, vector<int>(n, INF));
+    dp[0][0] = 0;
+    rep(i,1<<n) {
+        rep(vi,n) {
+            rep(vj,n) {
+                if (vi == vj) continue;
+                chmin(
+                    dp[i | (1<<vj)][vj],
+                    dp[i][vi] + abs(x[vj]-x[vi]) + abs(y[vj]-y[vi]) + max(0, z[vj]-z[vi])
+                );
+            }
+        }
     }
+    cout << dp[(1<<n)-1][0] << endl;
     return 0;
 }

@@ -12,13 +12,23 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int a, b;
-    cin >> a >> b;
-    if ((a*b)%2 == 0) {
-        cout << "No" << endl;
+    int n, q;
+    cin >> n >> q;
+    string s;
+    cin >> s;
+    vector<int> cnt(n);
+    for (int i = 1; i < n; ++i) {
+        cnt[i] += cnt[i-1];
+        if (s[i-1] == 'A' && s[i] == 'C') {
+            cnt[i]++;
+        }
     }
-    else {
-        cout << "Yes" << endl;
+
+    rep(i,q) {
+        int l, r;
+        cin >> l >> r;
+        --l, --r;
+        cout << cnt[r] - cnt[l] << endl;
     }
     return 0;
 }
