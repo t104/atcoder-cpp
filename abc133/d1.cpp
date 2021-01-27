@@ -12,42 +12,24 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int n, k, c;
-    cin >> n >> k >> c;
-    string s;
-    cin >> s;
-
-    vector<int> l(n);
-    int cnt = 0;
-    for (int li = 0; li < n;) {
-        if (s[li] == 'o') {
-            cnt++;
-            l[li] = cnt;
-            li += c+1;
-        }
-        else {
-            li++;
-        }
-    }
-
-    vector<int> r(n);
-    cnt = k;
-    for (int ri = n-1; 0 <= ri;) {
-        if (s[ri] == 'o') {
-            r[ri] = cnt;
-            cnt--;
-            ri -= c+1;
-        }
-        else {
-            ri--;
-        }
-    }
-
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    rep(i,n) cin >> a[i];
+    vector<int> ans(n);
     rep(i,n) {
-        if (l[i] != 0 && l[i] == r[i]) {
-            cout << i+1 << endl;
+        if (i%2 == 0) {
+            ans[0] += a[i];
+        }
+        else {
+            ans[0] -= a[i];
         }
     }
-
+    for (int i = 1; i < n; ++i) {
+        ans[i] = 2*a[i-1] - ans[i-1];
+    }
+    rep(i,n) {
+        cout << ans[i] << endl;
+    }
     return 0;
 }
