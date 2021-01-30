@@ -13,21 +13,15 @@ using P = pair<int,int>;
 
 int main() {
     int n;
-    cin >> n;
-    vector<ll> a(n);
-    ll ans = 0;
-    rep(i,n) cin >> a[i];
-    vector<ll> s(n+1);
+    ll d;
+    cin >> n >> d;
+    vector<ll> x(n), y(n);
+    rep(i,n) cin >> x[i] >> y[i];
+    int ans = 0;
+    d *= d;
     rep(i,n) {
-        s[i+1] += s[i] + a[i];
-    }
-    map<ll, int> mp;
-    rep(i,n+1) {
-        mp[s[i]]++;
-    }
-    for (auto p : mp) {
-        if (2 <= p.second) {
-            ans += (ll) p.second * (p.second-1) / 2;
+        if (x[i]*x[i] + y[i]*y[i] <= d) {
+            ans++;
         }
     }
     cout << ans << endl;

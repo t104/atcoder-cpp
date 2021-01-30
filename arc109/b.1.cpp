@@ -12,24 +12,12 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int n;
+    ll n;
     cin >> n;
-    vector<ll> a(n);
-    ll ans = 0;
-    rep(i,n) cin >> a[i];
-    vector<ll> s(n+1);
-    rep(i,n) {
-        s[i+1] += s[i] + a[i];
+    ll x = 0;
+    while ((x+1)*(x+2) <= 2*(n+1)) {
+        ++x;
     }
-    map<ll, int> mp;
-    rep(i,n+1) {
-        mp[s[i]]++;
-    }
-    for (auto p : mp) {
-        if (2 <= p.second) {
-            ans += (ll) p.second * (p.second-1) / 2;
-        }
-    }
-    cout << ans << endl;
+    cout << n-x+1 << endl;
     return 0;
 }

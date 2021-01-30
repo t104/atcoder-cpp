@@ -14,20 +14,24 @@ using P = pair<int,int>;
 int main() {
     int n;
     cin >> n;
-    vector<ll> a(n);
-    ll ans = 0;
-    rep(i,n) cin >> a[i];
-    vector<ll> s(n+1);
+    vector<P> r(n), b(n);
+    rep(i,n) cin >> r[i].first >> r[i].second;
+    rep(i,n) cin >> b[i].first >> b[i].second;
+    sort(b.begin(), b.end());
+    sort(r.begin(), r.end(), [&](P x, P y) {
+        return y.second < x.second;
+    });
+    vector<bool> choose(n, false);
+    int ans = 0;
     rep(i,n) {
-        s[i+1] += s[i] + a[i];
-    }
-    map<ll, int> mp;
-    rep(i,n+1) {
-        mp[s[i]]++;
-    }
-    for (auto p : mp) {
-        if (2 <= p.second) {
-            ans += (ll) p.second * (p.second-1) / 2;
+        rep(j,n) {
+            if (!choose[j]) {
+                if (r[j].first < b[i].first && r[j].second < b[i].second) {
+                    choose[j] = true;
+                    ans++;
+                    break;
+                }
+            }
         }
     }
     cout << ans << endl;
