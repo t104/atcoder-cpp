@@ -12,10 +12,27 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    char a, b;
-    cin >> a >> b;
-    if (b < a) swap(a,b);
-    rep(i,b-'0') cout << a;
-    cout << endl;
+    int n;
+    cin >> n;
+    map<int,int> mp;
+    rep(i,n) {
+        int d;
+        cin >> d;
+        mp[d]++;
+    }
+    int m;
+    cin >> m;
+    vector<int> t(m);
+    rep(i,m) cin >> t[i];
+    rep(i,m) {
+        if (mp.count(t[i]) && 0 < mp.at(t[i])) {
+            mp.at(t[i])--;
+        }
+        else {
+            cout << "NO" << endl;
+            return 0;
+        }
+    }
+    cout << "YES" << endl;
     return 0;
 }

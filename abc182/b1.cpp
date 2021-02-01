@@ -12,10 +12,18 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    char a, b;
-    cin >> a >> b;
-    if (b < a) swap(a,b);
-    rep(i,b-'0') cout << a;
-    cout << endl;
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    rep(i,n) cin >> a[i];
+    int mx = 0, ans = 0;
+    for (int i = 2; i <= 1000; ++i) {
+        int cnt = 0;
+        rep(j,n) {
+            if (a[j]%i == 0) cnt++;
+        }
+        if (chmax(mx, cnt)) ans = i;
+    }
+    cout << ans << endl;
     return 0;
 }
