@@ -14,6 +14,15 @@ using P = pair<int,int>;
 int main() {
     int n;
     cin >> n;
-    cout << n*n*n << endl;
+    vector<vector<int>> ans(n,vector<int>(2));
+    rep(i,n) {
+        rep(j,2) {
+            ans[i][j] = ((i+1)*2 + j) % n;
+            if (ans[i][j] == 0) ans[i][j] = n;
+        }
+    }
+    rep(i,n) {
+        cout << ans[i][0] << ' ' << ans[i][1] << endl;
+    }
     return 0;
 }

@@ -12,8 +12,20 @@ using ll = long long;
 using P = pair<int,int>;
 
 int main() {
-    int n;
-    cin >> n;
-    cout << n*n*n << endl;
+    string s;
+    cin >> s;
+    int n = s.size();
+    const string ans = "keyence";
+    if (s.substr(0,7) == ans || s.substr(n-7,7) == ans) {
+        cout << "YES" << endl;
+        return 0;
+    }
+    for (int i = 1; i <= 7; ++i) {
+        if (s.substr(0,i) == ans.substr(0,i) && s.substr(n-7+i,7-i) == ans.substr(i,7-i)) {
+            cout << "YES" << endl;
+            return 0;
+        }
+    }
+    cout << "NO" << endl;
     return 0;
 }

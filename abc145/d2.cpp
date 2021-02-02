@@ -35,20 +35,22 @@ struct combination {
 } c(MAX_N);
 
 int main() {
-    int n, k;
-    cin >> n >> k;
-    vector<ll> a(n);
-    rep(i,n) cin >> a[i];
-    sort(a.begin(), a.end());
-    mint ans = 0;
-    for (int i = k-1; i < n; ++i) {
-        ans += mint(a[i]) * c(i,k-1);
-        // cerr << a[i] << ' ' << i << endl;
+    int x, y;
+    cin >> x >> y;
+    int a, b;
+    if ((2*x-y)%3 == 0) {
+        b = (2*x-y)/3;
+        a = y-x+b;
     }
-    for (int i = 0; i <= n-k; ++i) {
-        ans -= mint(a[i]) * c(n-i-1,k-1);
-        // cerr << a[i] << ' ' << n-i << endl;
+    else if (2*x == y) {
+        a = x;
+        b = 0;
     }
-    cout << ans.val() << endl;
+    else {
+        cout << 0 << endl;
+        return 0;
+    }
+
+    cout << c(a+b,a).val() << endl;
     return 0;
 }
