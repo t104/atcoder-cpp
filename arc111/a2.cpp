@@ -11,16 +11,31 @@ template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r
 using ll = long long;
 using P = pair<int,int>;
 
-int main() {
-    int n, x;
-    cin >> n >> x;
-    int mi = INF;
-    rep(i,n) {
-        int m;
-        cin >> m;
-        x -= m;
-        chmin(mi, m);
+ll modPow(ll a, ll x, ll mod) {
+    ll res = 0;
+    if (x == 1) {
+        return a % mod;
     }
-    cout << x/mi + n << endl;
+    if (x%2 == 0) {
+        res = modPow(a, x/2, mod);
+        res *= res;
+        res %= mod;
+        return res;
+    }
+    res = modPow(a, x-1, mod);
+    res *= a;
+    res %= mod;
+    return res;
+}
+
+using mint = modint;
+
+int main() {
+    ll n, m;
+    cin >> n >> m;
+    mint::set_mod(m*m);
+    mint ans = 10;
+    ans = ans.pow(n);
+    cout << ans.val() / m << endl;
     return 0;
 }
