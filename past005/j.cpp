@@ -2,34 +2,45 @@
 #include <atcoder/all>
 using namespace std;
 using namespace atcoder;
+#define INF 1001001001
+#define LINF (1LL<<60)
 #define rep(i,n) for (int i = 0; i < (n); ++i)
-template<typename T1,typename T2> inline void chmin(T1 &a,T2 b){if(a>b) a=b;}
-template<typename T1,typename T2> inline void chmax(T1 &a,T2 b){if(a<b) a=b;}
+template<typename T1,typename T2> inline bool chmin(T1 &a,T2 b){ return a > b && (a = b, true); }
+template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b && (a = b, true); }
+template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
 using ll = long long;
-using P = pair<string,ll>;
-const int INF = 1001001001;
-const ll LINF = 1LL<<60;
-const ll MX = 1e15+10;
+using P = pair<int,int>;
+
+bool isAlphabet(char c) {
+    return 'a' <= c && c <= 'z';
+}
 
 int main() {
     string s;
     cin >> s;
-    int n = s.size();
     ll x;
     cin >> x;
-    vector<string> t;
-    vector<ll> len;
-    string now = "";
-    rep(i,n) {
-        if ('a' <= s.at(i) && s.at(i) <= 'z') {
-            now.push_back(s.at(i));
-            continue;
-        }
-        int l = s.at(i) = '0';
-        t.push_back(now);
-        now = "";
-        len.push_back(l);
-    }
 
+    while (true) {
+        ll y = 0;
+        for (auto c : s) {
+            if (isAlphabet(c)) {
+                if (x == y+1) {
+                    cout << c << endl;
+                    return 0;
+                }
+                ++y;
+            }
+            else {
+                ll d = c - '0';
+                if (x <= (d+1) * y) {
+                    if (x%y) x %= y;
+                    else x = y;
+                    break;
+                }
+                y += d * y;
+            }
+        }
+    }
     return 0;
 }
