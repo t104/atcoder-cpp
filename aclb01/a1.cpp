@@ -14,15 +14,9 @@ using P = pair<int,int>;
 int main() {
     int n;
     cin >> n;
-    vector<int> w(n);
-    rep(i,n) cin >> w[i];
-    int tot = 0;
-    rep(i,n) tot += w[i];
-    int ans = INF, sum = 0;
-    for (int i = 0; i < n; ++i) {
-        sum += w[i];
-        chmin(ans, abs(tot-2*sum));
-    }
+    string s = "ACL";
+    string ans = "";
+    rep(i,n) ans += s;
     cout << ans << endl;
     return 0;
 }

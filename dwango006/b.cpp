@@ -11,18 +11,22 @@ template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r
 using ll = long long;
 using P = pair<int,int>;
 
+using mint = modint1000000007;
+
 int main() {
     int n;
     cin >> n;
-    vector<int> w(n);
-    rep(i,n) cin >> w[i];
-    int tot = 0;
-    rep(i,n) tot += w[i];
-    int ans = INF, sum = 0;
-    for (int i = 0; i < n; ++i) {
-        sum += w[i];
-        chmin(ans, abs(tot-2*sum));
+    vector<ll> x(n);
+    rep(i,n) cin >> x[i];
+    vector<mint> dp(n);
+    mint ans = 0;
+    rep(i,n-1) {
+        dp[i+1] = dp[i] +  (mint (i+1)).inv();
+        ans += dp[i+1] * (x[i+1] - x[i]);
     }
-    cout << ans << endl;
+    for (int i = 1; i < n; ++i) {
+        ans *= i;
+    }
+    cout << ans.val() << endl;
     return 0;
 }
