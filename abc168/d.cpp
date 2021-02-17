@@ -1,58 +1,53 @@
 #include <bits/stdc++.h>
-#define rep(i,n) for (int i = 0; i < (n); ++i)
+#include <atcoder/all>
 using namespace std;
+using namespace atcoder;
+#define INF 1001001001
+#define LINF (1LL<<60)
+#define rep(i,n) for (int i = 0; i < (n); ++i)
+template<typename T1,typename T2> inline bool chmin(T1 &a,T2 b){ return a > b && (a = b, true); }
+template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b && (a = b, true); }
+template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
 using ll = long long;
-const int MAX_N = 100100100;
-vector<int> depth(100005, MAX_N);
-vector<vector<int>> rt(100005);
-int n, m;
-
-void bfs() {
-    queue<int> q;
-    q.push(0);
-    int d = 1;
-    
-    while(q.size()) {
-        int i = q.front(); q.pop();
-        auto list = rt.at(i);
-        for(int j : list) {
-            depth.at(j) = min(depth.at(j), d);
-            q.push(j);
-        }
-        d++;
-        if(n < d) break;
-    }
-    return;
-}
+using ld = long double;
+using P = pair<int,int>;
 
 int main() {
+    int n, m;
     cin >> n >> m;
-    rep(i, m) {
+    vector<vector<int>> g(n);
+    rep(i,m) {
         int a, b;
         cin >> a >> b;
-        a--; b--;
-        rt.at(a).push_back(b);
-        rt.at(b).push_back(a);
+        --a, --b;
+        g[a].push_back(b);
+        g[b].push_back(a);
     }
 
-    depth.at(0) = 0;
-    bfs();
-    rep(i, n) {
-        if(depth.at(i) == MAX_N) {
+    queue<int> que;
+    vector<int> route(n), dist(n, INF);
+    que.push(0);
+    dist[0] = 0;
+    while(que.size()) {
+        int now = que.front(); que.pop();
+        for (auto e : g[now]) {
+            if (chmin(dist[e], dist[now] + 1)) {
+                que.push(e);
+                route[e] = now;
+            }
+        }
+    }
+
+    rep(i,n) {
+        if (INF <= dist[i]) {
             cout << "No" << endl;
             return 0;
         }
     }
+
     cout << "Yes" << endl;
-    for(int i = 1; i < n; i++) {
-        int ans = 0;
-        for(int j : rt.at(i)) {
-            if(depth.at(i) - 1 == depth.at(j)) {
-                ans = j + 1;
-            }
-        }
-        cout << ans << endl;
+    for (int i = 1; i < n; ++i) {
+        cout << route[i] + 1 << endl;
     }
-    
     return 0;
 }
