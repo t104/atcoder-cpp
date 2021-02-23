@@ -13,7 +13,7 @@ using ld = long double;
 using P = pair<int,int>;
 
 const int MX = 101;
-ll dp[MX][MX];
+ll dp[MX][MX][MX];
 
 int main() {
     int n;
@@ -21,21 +21,26 @@ int main() {
     cin >> n >> x;
     vector<ll> a(n);
     rep(i,n) cin >> a[i];
+
     ll ans = LINF;
-    for (int k = 1; k <= n; ++k) {
-        rep(i,k+1) rep(j,k) dp[i][j] = -LINF;
-        dp[0][0] = 0;
-        for (int na: a) {
-            for (int i = k-1; 0 <= i; --i) {
-                rep(j,k) {
-                    chmax(dp[i+1][(j+na)%k], dp[i][j]+na);
+    for (int mod = 1; mod <= n; ++mod) {
+        rep(i,n+1) rep(j,mod+1) rep(k,mod) dp[i][j][k] = -LINF;
+        for (int i = 0; i < n; ++i) {
+            dp[i][0][0] = 0;
+            for (int j = 0; j <= mod; ++j) {
+                for (int k = 0; k < mod; ++k) {
+                    chmax(dp[i+1][j][k], dp[i][j][k]);
+                    chmax(dp[i+1][j+1][(k+a[i])%mod], dp[i][j][k] + a[i]);
                 }
             }
         }
-        ll s = dp[k][x%k];
-        if (0 <= s) ans = min(ans, (x-s)/k);
+        
+        ll s = dp[n][mod][x%mod];
+        if (0 <= s)
+            chmin(ans, (x-s)/mod);
     }
 
     cout << ans << endl;
+
     return 0;
 }
