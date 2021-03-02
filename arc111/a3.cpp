@@ -12,16 +12,15 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+using mint = modint;
+
 int main() {
-    int n;
-    ll h, w;
-    cin >> n >> h >> w;
-    ll ans = 0;
-    rep(i,n) {
-        ll hi, wi;
-        cin >> hi >> wi;
-        if (h <= hi && w <= wi) ans++;
-    }
-    cout << ans << endl;
+    ll n;
+    int m;
+    cin >> n >> m;
+    mint::set_mod(m*m);
+    mint r = mint(10).pow(n);
+    cout << r.val() / m % m << endl;
+
     return 0;
 }

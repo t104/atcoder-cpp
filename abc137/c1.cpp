@@ -12,16 +12,22 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+
 int main() {
     int n;
-    ll h, w;
-    cin >> n >> h >> w;
-    ll ans = 0;
+    cin >> n;
+    map<string,ll> mp;
     rep(i,n) {
-        ll hi, wi;
-        cin >> hi >> wi;
-        if (h <= hi && w <= wi) ans++;
+        string s;
+        cin >> s;
+        sort(s.begin(), s.end());
+        mp[s]++;
     }
+    ll ans = 0;
+    for (auto p: mp) {
+        ans += (ll) p.second*(p.second-1)/2;
+    }
+
     cout << ans << endl;
     return 0;
 }

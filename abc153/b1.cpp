@@ -13,15 +13,13 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
-    int n;
-    ll h, w;
-    cin >> n >> h >> w;
-    ll ans = 0;
-    rep(i,n) {
-        ll hi, wi;
-        cin >> hi >> wi;
-        if (h <= hi && w <= wi) ans++;
-    }
-    cout << ans << endl;
+    int h, n;
+    cin >> h >> n;
+    vector<int> a(n);
+    rep(i,n) cin >> a[i];
+    int sum = 0;
+    rep(i,n) sum += a[i];
+    if (h <= sum) cout << "Yes" << endl;
+    else cout << "No" << endl;
     return 0;
 }
