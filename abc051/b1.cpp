@@ -13,5 +13,14 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
+    int k, s;
+    cin >> k >> s;
+    int ans = 0;
+    rep(i,k+1) {
+        rep(j,k+1) {
+            if (s-i-j <= k && 0 <= s-i-j) ans++;
+        }
+    }
+    cout << ans << endl;
     return 0;
 }
