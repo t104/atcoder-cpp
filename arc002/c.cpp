@@ -14,18 +14,29 @@ using P = pair<int,int>;
 
 int main() {
     int n;
-    ll m;
-    cin >> n >> m;
-    vector<ll> a(n);
-    rep(i,n) cin >> a[i];
-    ll sum = 0, ans = 0;
-    map<ll, ll> r = {{0,1}};
-    rep(i,n) {
-        sum += a[i];
-        sum %= m;
-        ans += r[sum];
-        r[sum]++;
+    string s;
+    cin >> n >> s;
+    vector<string> patterns;
+    string t = "ABXY";
+    rep(i,4) rep(j,4) {
+        patterns.push_back({t[i], t[j]});
+    }
+
+    int m = patterns.size();
+    int ans = INF;
+    rep(i,m) rep(j,m) {
+        string x = patterns[i];
+        string y = patterns[j];
+        int cnt = 0;
+        rep(k,n) {
+            cnt++;
+            if (n-1 <= k) continue;
+            string sub = s.substr(k,2);
+            if (sub == x || sub == y) ++k;
+        }
+        chmin(ans, cnt);
     }
     cout << ans << endl;
+
     return 0;
 }
