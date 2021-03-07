@@ -40,7 +40,9 @@ struct rectangle {
         for (auto p: another.vertices()) {
             if (isInside(p)) return true;
         }
-        if (another.isInside(x,y)) return true;
+        for (auto p: vertices()) {
+            if (another.isInside(p)) return true;
+        }
         return false;
     }
 
@@ -77,15 +79,32 @@ struct board {
         return true;
     }
 
+    bool onBoard(rectangle &r) {
+        if (r.x < 0 || r.y < 0) return false;
+        if (MX <= r.x + r.w || MX <= r.y + r.h) return false;
+        return true;
+    }
+
     void add(request req) {
         int a = 1;
         
         while (a*a <= req.r) a++;
 
         a--;
-        int x = min(0, req.x - a);
-        int y = min(0, req.y - a);
+        rectangle r;
+        r.x = min(0, req.x - a);
+        r.y = min(0, req.y - a);
+        r.h = a;
+        r.w = a;
+        while (r.x <= req.x && r.y <= req.y) {
+            if (onBoard(r) && canAdd(r)) {
+                recs.push_back(r);
+                return;
+            }
+            r.x++, r.y++;
+        }
 
+        addRondom(req.id);
     }
 
     void addRondom(int id) {
@@ -139,7 +158,7 @@ struct solver {
     board solve() {
         board board;
         
-        for (auto req: reqs) board.addRondom(req.id);
+        for (auto &req: reqs) board.add(req);
 
         return board;
     }
