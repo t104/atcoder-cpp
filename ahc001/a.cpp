@@ -60,7 +60,7 @@ struct rectangle {
 };
 
 struct board {
-    const int MX = 100000;
+    const int MX = 10000;
     vector<rectangle> recs;
     int n;
 
@@ -92,6 +92,7 @@ struct board {
 
         a--;
         rectangle r;
+        r.id = req.id;
         r.x = min(0, req.x - a);
         r.y = min(0, req.y - a);
         r.h = a;
@@ -140,6 +141,9 @@ struct board {
     }
 
     void print() {
+        sort(recs.begin(), recs.end(), [&](auto x, auto y){
+            return x.id < y.id;
+        });
         for (auto &rec: recs) {
             rec.print();
         }
