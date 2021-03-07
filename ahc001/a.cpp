@@ -31,19 +31,44 @@ struct rectangle {
         upperLeft = point();
     }
 
-    bool isInside(point p) {
-        return in(p.x, upperLeft.x, upperLeft.x + w)
-        && in(p.y, upperLeft.y, upperLeft.y + h);
+    rectangle(int id, point ul, int h, int w):
+        id(id), upperLeft(ul), h(h), w(w) {}
+
+    rectangle(int a, int b, int c, int d) {
+        upperLeft = point(a, b);
+        h = c-a;
+        w = d-b;
     }
 
-    bool overlaps(rectangle another) {
-        for (auto p: another.vertices()) {
-            if (isInside(p)) return true;
+    bool isInside(point p) {
+        return upperLeft.x <= p.x && p.x <= upperLeft.x + w
+        && upperLeft.y <= p.y && p.y <= upperLeft.y + h;
+    }
+
+    static bool overlaps(rectangle x, rectangle y) {
+        for (auto p: x.vertices()) {
+            if (y.isInside(p)) return true;
         }
-        for (auto p: vertices()) {
-            if (another.isInside(p)) return true;
+        for (auto p: y.vertices()) {
+            if (x.isInside(p)) return true;
         }
         return false;
+    }
+
+    rectangle extendLeft(int d) {
+        return rectangle(id, point(upperLeft.x-d, upperLeft.y), h, w+d);
+    }
+
+    rectangle extendRight(int d) {
+        return rectangle(id, upperLeft, h, w+d);
+    }
+
+    rectangle extendCeil(int d) {
+        return rectangle(id, point(upperLeft.x, upperLeft.y - d), h+d, w);
+    }
+
+    rectangle extendBottom(int d) {
+        return rectangle(id, upperLeft, h+d, w);
     }
 
     vector<point> vertices() {
@@ -60,7 +85,7 @@ struct rectangle {
     }
 
     point lowerRight() {
-        return point(upperLeft.x + w, upperLeft.y + w);
+        return point(upperLeft.x + w, upperLeft.y + h);
     }
 };
 
@@ -79,7 +104,7 @@ struct board {
 
     bool canAdd(rectangle rec) {
         for (auto r: recs) {
-            if (r.overlaps(rec)) return false;
+            if (rectangle::overlaps(r, rec)) return false;
         }
         return true;
     }
@@ -92,29 +117,56 @@ struct board {
     }
 
     void add(request req) {
-        int a = 1;
-        
-        while (a*a <= req.r) a++;
+        rectangle r = rectangle(req.id, req.p, 0, 0);
+        bool left = true, right = true;
+        bool up = true, down = true;
+        int step = 1;
 
-        a--;
-        rectangle r = rectangle(req.id);
-        r.upperLeft = req.p;
-        r.h = a;
-        r.w = a;
+        while (left || right || up || down) {
+            if (req.r <= r.square()) break;
 
-        while (0 < a) {
-            r.h = a;
-            r.w = a;
-
-            while (0 <= r.upperLeft.x && 0 <= r.upperLeft.y && r.isInside(req.p)) {
-                if (onBoard(r) && canAdd(r)) {
-                    recs.push_back(r);
-                    return;
+            if (left) {
+                rectangle tmp = r.extendLeft(step);
+                if (onBoard(tmp) && canAdd(tmp)) {
+                    r = tmp;
                 }
-                r.upperLeft.x--, r.upperLeft.y--;
+                else left = false;
+            }
+            
+            if (req.r <= r.square()) break;
+
+            if (right) {
+                rectangle tmp = r.extendRight(step);
+                if (onBoard(tmp) && canAdd(tmp)) {
+                    r = tmp;
+                }
+                else right = false;
             }
 
-            a /= 2;
+            if (req.r <= r.square()) break;
+
+            if (up) {
+                rectangle tmp = r.extendCeil(step);
+                if (onBoard(tmp) && canAdd(tmp)) {
+                    r = tmp;
+                }
+                else up = false;
+            }
+            
+            if (req.r <= r.square()) break;
+
+            if (down) {
+                rectangle tmp = r.extendBottom(step);
+                if (onBoard(tmp) && canAdd(tmp)) {
+                    r = tmp;
+                }
+                else down = false;
+            }
+        }
+
+        if (0 < r.square() && canAdd(r)) {
+            recs.push_back(r);
+            return;
         }
 
         addRondom(req.id);
@@ -155,10 +207,12 @@ struct answer {
         return answer(recs);
     }
 
-    void print() {
-        sort(recs.begin(), recs.end(), [&](auto x, auto y){
+    void print(bool s = true) {
+        if (s) {
+            sort(recs.begin(), recs.end(), [&](auto x, auto y){
             return x.id < y.id;
-        });
+            });
+        }
 
         for (auto &rec: recs) {
             point lr = rec.lowerRight();
@@ -222,6 +276,7 @@ struct scorer {
     }
 };
 
+
 int main() {
     int n;
     cin >> n;
@@ -235,8 +290,8 @@ int main() {
     
     solver slv = solver(reqs);
     answer ans = slv.solve();
+    ans.print(true);
 
-    ans.print();
 
     return 0;
 }
