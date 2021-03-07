@@ -12,28 +12,28 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+struct point {
+    int x, y;
+    point(int x = 0, int y = 0): x(x), y(y) {}
+};
+
 struct request {
-    int id, x, y, r;
-    request(int id = 0, int x = 0, int y = 0, int r = 0):
-        id(id), x(x), y(y), r(r) {}
+    int id, r;
+    point p;
+    request(int id = 0): id(id) {}
 };
 
 struct rectangle {
-    int id, x, y, h, w;
-    rectangle() {
-        id = 0;
-        x = 0;
-        y = 0;
-        h = 0;
-        w = 0;
-    };
+    int id, h, w;
+    point upperLeft;
 
-    bool isInside(int reqx, int reqy) {
-        return in(reqx, x, x+w) && in(reqy, y, y+h);
+    rectangle(int id = 0): id(id) {
+        upperLeft = point();
     }
 
-    bool isInside(P p) {
-        return isInside(p.first, p.second);
+    bool isInside(point p) {
+        return in(p.x, upperLeft.x, upperLeft.x + w)
+        && in(p.y, upperLeft.y, upperLeft.y + h);
     }
 
     bool overlaps(rectangle another) {
@@ -46,16 +46,21 @@ struct rectangle {
         return false;
     }
 
-    vector<P> vertices() {
-        return {{x,y}, {x+h,y}, {x,y+h}, {x+h,y+h}};
+    vector<point> vertices() {
+        return {
+            upperLeft,
+            point(upperLeft.x + w, upperLeft.y),
+            point(upperLeft.x, upperLeft.y + h),
+            point(upperLeft.x + w, upperLeft.y + h)
+        };
     }
 
     int square() {
         return h*w;
     }
 
-    void print() {
-        cout << x << ' ' << y << ' ' << x+w << ' ' << y+h << endl;
+    point lowerRight() {
+        return point(upperLeft.x + w, upperLeft.y + w);
     }
 };
 
@@ -80,8 +85,9 @@ struct board {
     }
 
     bool onBoard(rectangle &r) {
-        if (r.x < 0 || r.y < 0) return false;
-        if (MX <= r.x + r.w || MX <= r.y + r.h) return false;
+        if (r.upperLeft.x < 0 || r.upperLeft.y < 0) return false;
+        point lr = r.lowerRight();
+        if (MX <= lr.x || MX <= lr.y) return false;
         return true;
     }
 
@@ -91,31 +97,34 @@ struct board {
         while (a*a <= req.r) a++;
 
         a--;
-        rectangle r;
-        r.id = req.id;
-        r.x = req.x;
-        r.y = req.y;
+        rectangle r = rectangle(req.id);
+        r.upperLeft = req.p;
         r.h = a;
         r.w = a;
-    
-        while (0 <= r.x && 0 <= r.y) {
-            if (onBoard(r) && canAdd(r)) {
-                recs.push_back(r);
-                return;
+
+        while (0 < a) {
+            r.h = a;
+            r.w = a;
+
+            while (0 <= r.upperLeft.x && 0 <= r.upperLeft.y && r.isInside(req.p)) {
+                if (onBoard(r) && canAdd(r)) {
+                    recs.push_back(r);
+                    return;
+                }
+                r.upperLeft.x--, r.upperLeft.y--;
             }
-            r.x--, r.y--;
+
+            a /= 2;
         }
 
         addRondom(req.id);
     }
 
     void addRondom(int id) {
-        rectangle r;
-        r.id = id;
+        rectangle r = rectangle(id);
         for (int i = 0; i < MX-1; i += 2) {
             for (int j = 0; j < MX-1; j += 2) {
-                r.x = i;
-                r.y = j;
+                r.upperLeft = point(i,j);
                 r.h = 2;
                 r.w = 2;
                 if (canAdd(r)) {
@@ -125,28 +134,40 @@ struct board {
             }
         }
     }
+};
 
-    static board fromInput(int n) {
+struct answer {
+    vector<rectangle> recs;
+
+    answer(vector<rectangle> &recs): recs(recs) {}
+
+    static answer fromInput(int n) {
         vector<rectangle> recs(n);
 
         rep(i,n) {
             int a, b, c, d;
             cin >> a >> b >> c >> d;
-            recs[i].x = a;
-            recs[i].y = b;
+            recs[i].upperLeft = point(a,b);
             recs[i].w = c - a;
             recs[i].h = d - b;
         }
 
-        return board(recs);
+        return answer(recs);
     }
 
     void print() {
         sort(recs.begin(), recs.end(), [&](auto x, auto y){
             return x.id < y.id;
         });
+
         for (auto &rec: recs) {
-            rec.print();
+            point lr = rec.lowerRight();
+            printf("%d %d %d %d\n",
+            rec.upperLeft.x,
+            rec.upperLeft.y,
+            lr.x,
+            lr.y
+            );
         }
     }
 };
@@ -156,7 +177,7 @@ struct solver {
 
     solver(vector<request> &reqs): reqs(reqs) {}
 
-    board solve() {
+    answer solve() {
         board board;
 
         sort(reqs.begin(), reqs.end(), [&](auto x, auto y) {
@@ -165,7 +186,7 @@ struct solver {
         
         for (auto &req: reqs) board.add(req);
 
-        return board;
+        return answer(board.recs);
     }
 
 };
@@ -183,7 +204,7 @@ struct scorer {
         vector<rectangle> &recs = ans.recs;
 
         rep(i,n) {
-            if (!recs[i].isInside(reqs[i].x, reqs[i].y)) {
+            if (!recs[i].isInside(reqs[i].p)) {
                 scores[i] = 0.0;
                 continue;
             }
@@ -207,14 +228,13 @@ int main() {
 
     vector<request> reqs(n);
     rep(i,n) {
-        request r;
-        r.id = i;
-        cin >> r.x >> r.y >> r.r;
+        request r = request(i);
+        cin >> r.p.x >> r.p.y >> r.r;
         reqs[i] = r;
     }
     
     solver slv = solver(reqs);
-    board ans = slv.solve();
+    answer ans = slv.solve();
 
     ans.print();
 
