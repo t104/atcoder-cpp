@@ -93,16 +93,17 @@ struct board {
         a--;
         rectangle r;
         r.id = req.id;
-        r.x = min(0, req.x - a);
-        r.y = min(0, req.y - a);
+        r.x = req.x;
+        r.y = req.y;
         r.h = a;
         r.w = a;
-        while (r.x <= req.x && r.y <= req.y) {
+    
+        while (0 <= r.x && 0 <= r.y) {
             if (onBoard(r) && canAdd(r)) {
                 recs.push_back(r);
                 return;
             }
-            r.x++, r.y++;
+            r.x--, r.y--;
         }
 
         addRondom(req.id);
@@ -152,15 +153,15 @@ struct board {
 
 struct solver {
     vector<request> reqs;
-    vector<rectangle> recs;
-    int n;
 
-    solver(vector<request> &reqs): reqs(reqs) {
-        n = reqs.size();
-    }
+    solver(vector<request> &reqs): reqs(reqs) {}
 
     board solve() {
         board board;
+
+        sort(reqs.begin(), reqs.end(), [&](auto x, auto y) {
+            return x.r < y.r;
+        });
         
         for (auto &req: reqs) board.add(req);
 
