@@ -32,6 +32,22 @@ struct rectangle {
         return in(reqx, x, x+w) && in(reqy, y, y+h);
     }
 
+    bool isInside(P p) {
+        return isInside(p.first, p.second);
+    }
+
+    bool overlaps(rectangle another) {
+        for (auto p: another.vertices()) {
+            if (isInside(p)) return true;
+        }
+        if (another.isInside(x,y)) return true;
+        return false;
+    }
+
+    vector<P> vertices() {
+        return {{x,y}, {x+h,y}, {x,y+h}, {x+h,y+h}};
+    }
+
     int square() {
         return h*w;
     }
@@ -41,15 +57,55 @@ struct rectangle {
     }
 };
 
-struct answer {
+struct board {
+    const int MX = 100000;
     vector<rectangle> recs;
     int n;
 
-    answer(vector<rectangle> &recs): recs(recs) {
+    board(vector<rectangle> recs): recs(recs) {
         n = recs.size();
     }
 
-    static answer fromInput(int n) {
+    board() {
+        n = 0;
+    }
+
+    bool canAdd(rectangle rec) {
+        for (auto r: recs) {
+            if (r.overlaps(rec)) return false;
+        }
+        return true;
+    }
+
+    void add(request req) {
+        int a = 1;
+        
+        while (a*a <= req.r) a++;
+
+        a--;
+        int x = min(0, req.x - a);
+        int y = min(0, req.y - a);
+
+    }
+
+    void addRondom(int id) {
+        rectangle r;
+        r.id = id;
+        for (int i = 0; i < MX-1; i += 2) {
+            for (int j = 0; j < MX-1; j += 2) {
+                r.x = i;
+                r.y = j;
+                r.h = 2;
+                r.w = 2;
+                if (canAdd(r)) {
+                    recs.push_back(r);
+                    return;
+                }
+            }
+        }
+    }
+
+    static board fromInput(int n) {
         vector<rectangle> recs(n);
 
         rep(i,n) {
@@ -61,7 +117,7 @@ struct answer {
             recs[i].h = d - b;
         }
 
-        return answer(recs);
+        return board(recs);
     }
 
     void print() {
@@ -80,15 +136,12 @@ struct solver {
         n = reqs.size();
     }
 
-    answer solve() {
-        recs.resize(n);
-        rep(i,n) {
-            recs[i].x = reqs[i].x;
-            recs[i].y = reqs[i].y;
-            recs[i].w = 0;
-            recs[i].h = 0;
-        }
-        return answer(recs);
+    board solve() {
+        board board;
+        
+        for (auto req: reqs) board.addRondom(req.id);
+
+        return board;
     }
 
 };
@@ -101,7 +154,7 @@ struct scorer {
         n = reqs.size();
     }
     
-    ll score(answer &ans) {
+    ll score(board &ans) {
         vector<double> scores(n);
         vector<rectangle> &recs = ans.recs;
 
@@ -137,7 +190,7 @@ int main() {
     }
     
     solver slv = solver(reqs);
-    answer ans = slv.solve();
+    board ans = slv.solve();
 
     ans.print();
 
