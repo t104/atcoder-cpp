@@ -55,6 +55,14 @@ struct rectangle {
         return false;
     }
 
+    rectangle extend(int d, int direction) {
+        if (direction == 0) extendLeft(d);
+        if (direction == 1) extendRight(d);
+        if (direction == 2) extendCeil(d);
+        if (direction == 3) extendBottom(d);
+        throw;
+    }
+
     rectangle extendLeft(int d) {
         return rectangle(id, point(upperLeft.x-d, upperLeft.y), h, w+d);
     }
@@ -116,64 +124,12 @@ struct board {
         return true;
     }
 
-    void add(request req) {
-        rectangle r = rectangle(req.id, req.p, 0, 0);
-        bool left = true, right = true;
-        bool up = true, down = true;
-        int step = 1;
-
-        while (left || right || up || down) {
-            if (req.r <= r.square()) break;
-
-            if (left) {
-                rectangle tmp = r.extendLeft(step);
-                if (onBoard(tmp) && canAdd(tmp)) {
-                    r = tmp;
-                }
-                else left = false;
-            }
-            
-            if (req.r <= r.square()) break;
-
-            if (right) {
-                rectangle tmp = r.extendRight(step);
-                if (onBoard(tmp) && canAdd(tmp)) {
-                    r = tmp;
-                }
-                else right = false;
-            }
-
-            if (req.r <= r.square()) break;
-
-            if (up) {
-                rectangle tmp = r.extendCeil(step);
-                if (onBoard(tmp) && canAdd(tmp)) {
-                    r = tmp;
-                }
-                else up = false;
-            }
-            
-            if (req.r <= r.square()) break;
-
-            if (down) {
-                rectangle tmp = r.extendBottom(step);
-                if (onBoard(tmp) && canAdd(tmp)) {
-                    r = tmp;
-                }
-                else down = false;
-            }
-        }
-
-        if (0 < r.square() && canAdd(r)) {
-            recs.push_back(r);
-            return;
-        }
-
-        addRondom(req.id);
+    void add(rectangle r) {
+        recs.push_back(r);
     }
 
-    void addRondom(int id) {
-        rectangle r = rectangle(id);
+    void addRondom(request req) {
+        rectangle r = rectangle(req.id);
         for (int i = 0; i < MX-1; i += 2) {
             for (int j = 0; j < MX-1; j += 2) {
                 r.upperLeft = point(i,j);
@@ -238,8 +194,33 @@ struct solver {
             return x.r < y.r;
         });
         
-        for (auto &req: reqs) board.add(req);
+        for (auto &req: reqs) {
+            rectangle r = rectangle(req.id, req.p, 0, 0);
+            bool directions[] = {true, true, true, true};
+            int step = 1;
 
+            while (true) {
+                rep(i,4) {
+                    if (directions[i]) {
+                        rectangle tmp = r.extend(step, i);
+                        if (board.onBoard(tmp) && board.canAdd(tmp)) {
+                            for (auto q: reqs) {
+                                if (req.id == q.id) continue;
+                                if (tmp.isInside(q.p)) {
+                                    directions[i] = false;
+                                    break;
+                                };
+                            }
+                            if (left) r = tmp;
+                        }
+                        else directions[i] = false;
+                    }
+                    if (req.r <= r.square()) break;
+                }
+                if (req.r <= r.square()) break;
+                
+            }
+        }
         return answer(board.recs);
     }
 
