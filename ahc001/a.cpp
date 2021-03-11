@@ -56,10 +56,10 @@ struct rectangle {
     }
 
     rectangle extend(int d, int direction) {
-        if (direction == 0) extendLeft(d);
-        if (direction == 1) extendRight(d);
-        if (direction == 2) extendCeil(d);
-        if (direction == 3) extendBottom(d);
+        if (direction == 0) return extendLeft(d);
+        if (direction == 1) return extendRight(d);
+        if (direction == 2) return extendCeil(d);
+        if (direction == 3) return extendBottom(d);
         throw;
     }
 
@@ -189,6 +189,7 @@ struct solver {
 
     answer solve() {
         board board;
+        const int step = 1;
 
         sort(reqs.begin(), reqs.end(), [&](auto x, auto y) {
             return x.r < y.r;
@@ -196,30 +197,31 @@ struct solver {
         
         for (auto &req: reqs) {
             rectangle r = rectangle(req.id, req.p, 0, 0);
-            bool directions[] = {true, true, true, true};
-            int step = 1;
+            int directions = 0;
 
-            while (true) {
+            while (directions < (1<<4 - 1)) {
                 rep(i,4) {
-                    if (directions[i]) {
+                    if ((~directions>>i)&1) {
                         rectangle tmp = r.extend(step, i);
                         if (board.onBoard(tmp) && board.canAdd(tmp)) {
                             for (auto q: reqs) {
                                 if (req.id == q.id) continue;
                                 if (tmp.isInside(q.p)) {
-                                    directions[i] = false;
+                                    directions |= 1<<i;
                                     break;
                                 };
                             }
-                            if (left) r = tmp;
+                            if ((~directions>>i)&1) r = tmp;
                         }
-                        else directions[i] = false;
+                        else directions |= 1<<i;
                     }
                     if (req.r <= r.square()) break;
                 }
                 if (req.r <= r.square()) break;
-                
             }
+            
+            if (0 < r.square()) board.add(r);
+            else board.addRondom(req);
         }
         return answer(board.recs);
     }
