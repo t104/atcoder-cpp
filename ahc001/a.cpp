@@ -197,32 +197,42 @@ struct solver {
         
         for (auto &req: reqs) {
             rectangle r = rectangle(req.id, req.p, 0, 0);
-            int directions = 0;
+            int flag = 0;
 
-            while (directions < (1<<4 - 1)) {
-                rep(i,4) {
-                    if ((~directions>>i)&1) {
-                        rectangle tmp = r.extend(step, i);
+            while (flag < (1<<4) - 1) {
+                if (req.r <= r.square()) break;
+
+                rep(dir, 4) {
+                    if ((~flag>>dir)&1) {
+                        rectangle tmp = r.extend(step, dir);
                         if (board.onBoard(tmp) && board.canAdd(tmp)) {
                             for (auto q: reqs) {
                                 if (req.id == q.id) continue;
                                 if (tmp.isInside(q.p)) {
-                                    directions |= 1<<i;
+                                    flag |= 1<<dir;
                                     break;
-                                };
+                                }
                             }
-                            if ((~directions>>i)&1) r = tmp;
+                            if ((~flag>>dir)&1) r = tmp;
                         }
-                        else directions |= 1<<i;
+                        else flag |= 1<<dir;
                     }
-                    if (req.r <= r.square()) break;
+
+                    if (req.r <= r.square()) {
+                        flag |= 1<<dir;
+                        break;
+                    }
                 }
-                if (req.r <= r.square()) break;
             }
-            
-            if (0 < r.square()) board.add(r);
-            else board.addRondom(req);
+
+            if (0 < r.square() && board.canAdd(r)) {
+                board.add(r);
+                continue;
+            }
+
+            board.addRondom(req);
         }
+
         return answer(board.recs);
     }
 
