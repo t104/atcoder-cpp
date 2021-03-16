@@ -39,11 +39,17 @@ mint dp[5005][5005];
 int main() {
     int n, m;
     cin >> n >> m;
-    mint ans = 0;
-    rep(i,n) {
-        mint d = c(n,i+1) * mint(m).pow(n-i);
-        if (i%2 == 0) ans += d;
-        else ans -= d;
+    mint ans = n * mint(m).pow(n);
+    vector<mint> powM(n+1);
+    powM[0] = 1;
+    rep(i,n) powM[i+1] = powM[i] * m;
+    for (int x = 1; x <= m; ++x) {
+      vector<mint> tmp(n+1);
+      tmp[0] = 1;
+      rep(i,n) tmp[i+1] = tmp[i] * (m-x);
+      for (int w = 2; w <= n; ++w) {
+        ans -= tmp[w-2] * mint(n-w+1) * powM[n-w];
+      }
     }
     cout << ans.val() << endl;
     return 0;
