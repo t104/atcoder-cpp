@@ -32,24 +32,12 @@ int main() {
     vector<int> ans;
     rep(i,n) {
         int d = q[i] - i;
-        int tmp = i;
-        if (0 < d) {
-            for (int j = q[i]; i < j; --j) {
-                if (sp[j-1]) dame();
-                ans.push_back(j-1);
-                sp[j-1]++;
-                swap(q[tmp], q[p[j-1]]);
-                swap(p[j],p[j-1]);
-            }
-        }
-        else {
-            for (int j = q[i]; j < i; ++j) {
-                if (sp[j]) dame();
-                ans.push_back(j);
-                sp[j]++;
-                swap(q[j], q[p[j+1]]);
-                swap(p[j], p[j+1]);
-            }
+        for (int j = q[i]; i < j; --j) {
+            if (sp[j-1]) dame();
+            ans.push_back(j-1);
+            sp[j-1]++;
+            swap(q[i], q[p[j-1]]);
+            swap(p[j],p[j-1]);
         }
     }
 
