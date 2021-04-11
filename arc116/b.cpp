@@ -20,13 +20,15 @@ int main() {
     vector<int> a(n);
     rep(i,n) cin >> a[i];
     sort(a.begin(), a.end());
-    vector<mint> ssum(n+1);
-    rep(i,n) ssum[i+1] = ssum[i] + a[i];
-    mint ans = 0, sum = 0;
+    mint sum1 = 0, sum2 = 0, ans = 0;
     rep(i,n) {
-        sum += ssum[i];
-        ans += a[i] * a[i];
-        ans += a[i] * sum;
+        sum1 += a[i];
+        if (2 <= i) {
+            sum2 += a[i-2];
+            sum1 -= a[i-2];
+        }
+        sum2 *= 2;
+        ans += (sum1 + sum2) * a[i];
     }
     cout << ans.val() << endl;
     return 0;
