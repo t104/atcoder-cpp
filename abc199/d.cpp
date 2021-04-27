@@ -16,23 +16,13 @@ int n, m;
 vector<vector<int>> g;
 vector<bool> visited;
 
-void dfs(int v, vector<int> &h) {
-    if (visited[v]) return;
-    visited[v] = true;
-    h.push_back(v);
-    for (auto u: g[v]) {
-        if (visited[u]) continue;
-        dfs(u, h);
-    }
-}
 
-void dfs2(int v, int s, vector<int> &col) {
+void dfs(int v, vector<int> &member) {
+    if (visited[v]) return;
+    member.push_back(v);
+    visited[v] = true;
     for (auto u: g[v]) {
-        if (0 <= col[u]) continue;
-        if (s&1) col[u] = (col[v]+2) % 3;
-        else col[u] = (col[v]+1) % 3;
-        s >>= 1;
-        dfs2(u, s, col);
+        dfs(u, member);
     }
 }
 
@@ -40,6 +30,7 @@ int main() {
     cin >> n >> m;
     g.resize(n);
     visited.resize(n, false);
+
     rep(i,m) {
         int a, b;
         cin >> a >> b;
@@ -48,34 +39,37 @@ int main() {
         g[b].push_back(a);
     }
 
-    vector<ll> cnt;
-
+    ll ans = 1;
     rep(i,n) {
-        vector<int> h;
-        dfs(i,h);
-        int sz = h.size();
+        vector<int> member;
+        dfs(i,member);
+        int sz = member.size();
         if (sz == 0) continue;
-        ll ci = 0;
-        rep(j,3) {
+        ll cnt = 0;
+        rep(s, 1<<(sz-1)) {
             vector<int> col(n,-1);
-            col[h[0]] = j;
-            for (int s = 0; s < (1<<(sz-1)); ++s) {
-                dfs2(h[0], s, col);
-                bool ok = true;
-                for (auto hi: h) {
-                    for (auto u: g[hi]) {
-                        if (col[u] == col[hi]) ok = false;
+            col[member[0]] = 0;
+            rep(j,sz-1) {
+                for (auto u: g[member[j+1]]) {
+                    if (col[u] != -1) {
+                        if ((s>>j)&1)
+                            col[member[j+1]] = (col[u]+2)%3;
+                        else 
+                            col[member[j+1]] = (col[u]+1)%3;
+                        break;
                     }
                 }
-                if (ok) ci++;
             }
+            bool ok = true;
+            for (auto u: member) {
+                for (auto v: g[u]) {
+                    if (col[u] == col[v]) ok = false;
+                }
+            }
+            if (ok) cnt++;
         }
-        cnt.push_back(ci);
+        ans *= 3LL*cnt;
     }
-
-    ll ans = 1;
-    for (auto c: cnt) ans *= c;
     cout << ans << endl;
-
     return 0;
 }
