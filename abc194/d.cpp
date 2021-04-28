@@ -12,12 +12,13 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+
 int main() {
     cout << std::fixed << std::setprecision(15);
-    int n;
+    ll n;
     cin >> n;
     ld ans = 0;
-    for (int i = n-1; 1 <= i; --i) {
+    for (int i = 1; i <= n-1; ++i) {
         ans += ld(n)/ld(i);
     }
     cout << ans << endl;
