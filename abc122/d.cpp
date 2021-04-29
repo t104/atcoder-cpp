@@ -14,41 +14,53 @@ using P = pair<int,int>;
 
 using mint = modint1000000007;
 
-map<string,mint> dp[105];
-const string all = "ATGC";
-const string trp[] = {"AGC", "GAC", "ACG"};
+const vector<string> base = {"A", "C", "G", "T"};
+vector<map<string,mint>> dp(105);
+
+bool agc2(string s, string t) {
+    if (s == "AG" && t == "C") return true;
+    if (s == "AC" && t == "G") return true;
+    if (s == "GA" && t == "C") return true;
+    return false;
+}
+
+bool agc3(string s, string t) {
+    if (agc2(s.substr(1,2), t)) return true;
+    if (s[0] == 'A' && s[2] == 'G' && t == "C") return true;
+    if (s.substr(0,2) == "AG" && t == "C") return true;
+    return false;
+}
 
 int main() {
     int n;
     cin >> n;
-    rep(i,4) rep(j,4) rep(k,4) {
-        string s = string({all[i], all[j], all[k]});
-        dp[3][s] = 1;
-    }
-
-    for (auto s: trp) dp[3][s] = 0;
-
-    for (int i = 3; i < n; ++i) {
-        rep(c1, 4) rep(c2, 4) rep(c3, 4) {
-            string s = string({all[c1], all[c2], all[c3]});
-            rep(c4,4) {
-                string t = string({all[c2], all[c3], all[c4]});
-                if (all[c1]=='A' && all[c3]=='G' && all[c4]=='C') continue;
-                if (all[c1]=='A' && all[c2]=='G' && all[c4]=='C') continue;
-                bool ok = true;
-                for (auto u: trp) if (t == u) ok = false;
-                if (ok) {
-                    dp[i+1][t] += dp[i][s];
+    dp[0][""] = 1;
+    rep(i,n) {
+        for (auto p: dp[i]) {
+            if (p.first.size() <= 1) {
+                for (auto &b: base) {
+                    dp[i+1][p.first+b] += p.second;
+                }
+            }
+            else if (p.first.size() == 2) {
+                for (auto &b: base) {
+                    if (agc2(p.first, b)) continue;
+                    dp[i+1][p.first+b] += p.second;
+                }
+            }
+            else {
+                for (auto &b: base) {
+                    string s = p.first.substr(1,2);
+                    if (agc3(p.first, b)) continue;
+                    dp[i+1][s+b] += p.second;
                 }
             }
         }
     }
-
     mint ans = 0;
-    for (auto i: dp[n]) {
-        ans += i.second;
+    for (auto p: dp[n]) {
+        ans += p.second;
     }
     cout << ans.val() << endl;
-    
     return 0;
 }
