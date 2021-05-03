@@ -12,26 +12,28 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
-int solve (string s) {
-    reverse(s.begin(), s.end());
-    int n = s.size();
+int dp[1000005][2];
 
-    ll ans = 0;
-    int up = 0;
-    rep(i,n) {
-        int d = s[i] - '0';
-        if (up == 1) d++;
-        if (d < 5) up = 0;
-        else if (d == 5) {
-            if (i+1 < n && 5 <= s[i+1]-'0') up = 1;
-            else up = 0;
+int solve(string s) {
+    reverse(s.begin(), s.end());
+    s += '0';
+    int n = s.size();
+    rep(i,n+1) rep(j,2) dp[i][j] = INF;
+    dp[0][0] = 0;
+    rep(i,n) rep(j,2) {
+        int x = s[i] - '0';
+        x += j;
+        rep(a, 10) {
+            int ni = i+1, nj = 0;
+            int b = a-x;
+            if (b < 0) {
+                nj = 1;
+                b += 10;
+            }
+            chmin(dp[ni][nj], dp[i][j] + a + b);
         }
-        else up = 1;
-        d %= 10;
-        ans += min(d, 10-d);
-        if (i == n-1) ans += up;
     }
-    return ans;
+    return dp[n][0];
 }
 
 int main() {
