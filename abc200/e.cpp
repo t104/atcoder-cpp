@@ -12,34 +12,58 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
-ll c2(ll x) {
-    if (x == 0) return 1LL;
-    return x*(x-1)/2;
+ll dp[4][3000100];
+
+void printdp(int len) {
+    rep(j,len) {
+        rep(i,4) {
+            cout << dp[i][j] << ' ';
+        }
+        cout << endl;
+    }
 }
 
 int main() {
     ll n, k;
     cin >> n >> k;
-    n--;
-    ll s = 0;
-    while (true) {
-        ll d = c2(s+2);
-        if (k-d < 0) break;
-        k -= d;
-        s++;
+    dp[0][0] = 1;
+
+    rep(i,3) {
+        rep(j,3*n+1) dp[i][j+1] += dp[i][j];
+        rep(j,3*n+1) {
+            if (0 <= j-1)
+                dp[i+1][j] += dp[i][j-1];
+            if (0 <= j-n-1)
+                dp[i+1][j] -= dp[i][j-n-1];
+        }
     }
 
-    ll a = max(0LL, s-2*n);
-    while (true) {
-        ll d = s+1-a;
-        if (k-d < 0) break;
-        k -= d;
-        a++;
+    // printdp(3*n+1);
+
+    ll sum = 0;
+    rep(i,3*n+1) {
+        if (dp[3][i] < k) {
+            k -= dp[3][i];
+        }
+        else {
+            sum = i;
+            break;
+        }
     }
-    s -= a;
-    ll b = k-1;
-    ll c = s-b;
-    ++a, ++b, ++c;
-    printf("%lld %lld %lld\n", a, b, c);
+
+    for (int x = max(1LL, sum-2*n); x <= min(n, sum-2); ++x) {
+        int d = min(n, sum-x-1) - max(1LL, sum-x-n) + 1;
+        if (d < k) {
+            k -= d;
+            continue;
+        }
+        for (int y = max(1LL, sum-x-n); y <= min(n, sum-x-1); ++y) {
+            k--;
+            if (k == 0) {
+                printf("%d %d %d\n", x, y, sum-x-y);
+                return 0;
+            }
+        }
+    }
     return 0;
 }
