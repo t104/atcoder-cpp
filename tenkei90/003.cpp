@@ -17,17 +17,22 @@ vector<vector<int>> g;
 vector<int> visited;
 
 int dfs(int v) {
+    if (visited[v]) return 0;
+    visited[v] = true;
     vector<int> len = {0};
     for (auto u: g[v]) {
+        if (visited[u]) continue;
         len.push_back(dfs(u));
     }
-    
+    sort(len.rbegin(), len.rend());
+    if (2 <= len.size()) chmax(ans, len[0]+len[1]+1);
+    return len[0]+1;
 }
 
 int main() {
     cin >> n;
     g.resize(n);
-    visited(n);
+    visited.resize(n, false);
     ans = 0;
 
     rep(i,n-1) {
@@ -38,6 +43,8 @@ int main() {
         g[b].push_back(a);
     }
 
+    rep(i,n) dfs(i);
+    cout << ans << endl;
 
     return 0;
 }
