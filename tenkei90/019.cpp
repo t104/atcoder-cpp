@@ -24,20 +24,21 @@ int main() {
     
     rep(i,N) {
         for (int j = i; j <= N; ++j) dp[i][j] = INF;
-        if (i < N-1) dp[i][i+1] = abs(a[i] - a[i+1]);
+        dp[i][i] = 0;
     }
 
-    for (int w = 3; w <= N; w += 2) {
+
+    for (int w = 2; w <= N; w += 2) {
         for (int l = 0; l+w <= N; ++l) {
             int r = l+w;
-            for (int m = l; m <= r-1; ++m) {
-                chmin(dp[l][r], dp[l][m] + dp[m+1][r]);
-                chmin(dp[l][r], dp[l+1][r-1] + abs(a[l] - a[r]));
+            for (int m = l+1; m < r; ++m) {
+                chmin(dp[l][r], dp[l][m] + dp[m][r]);
+                chmin(dp[l][r], dp[l+1][r-1] + abs(a[l] - a[r-1]));
             }
         }
     }
 
-    cout << dp[0][N-1] << endl;
+    cout << dp[0][N] << endl;
     
     return 0;
 }
