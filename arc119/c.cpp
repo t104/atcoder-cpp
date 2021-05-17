@@ -15,29 +15,23 @@ using P = pair<int,int>;
 int main() {
     int n;
     cin >> n;
-    vector<int> a(n);
+    vector<ll> a(n);
     rep(i,n) cin >> a[i];
-    int ans = 0;
-    rep(l,n-1) {
-        vector<int> ai(n);
-        for (int x = l; x < n-1; ++x) {
-            int d = a[x] - ai[x];
-            ai[x] += d;
-            ai[x+1] += d;
-            rep(i,n) cout << ai[i] << ' ';
-            cout << endl;
-            if (ai[x+1] == a[x+1]) {
-                // cout << l << ' ' << x+1 << endl;
-                ans++;
-            }
-        }
+    vector<ll> sum(n+1);
+    rep(i,n) {
+        if (i%2 == 0) sum[i+1] += sum[i] + a[i];
+        else sum[i+1] += sum[i] - a[i];
     }
-
-    vector<int> ai(n);
-    for (int x = 0; x < n-1; ++x) {
-        int d = a[x] - ai[x];
-        ai[x] += d;
-        ai[x+1] += d;
+    ll ans = 0;
+    sort(sum.begin(), sum.end());
+    ll now = -LINF, cnt = 0;
+    for (auto si: sum) {
+        if (now == si) ans += cnt;
+        else {
+            now = si;
+            cnt = 0;
+        }
+        cnt++;
     }
     cout << ans << endl;
     return 0;
