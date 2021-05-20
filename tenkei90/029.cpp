@@ -15,6 +15,8 @@ using P = pair<int,int>;
 using S = int;
 using F = int;
 
+const F ID = INF;
+
 S op(S a, S b) {
     return max(a,b);
 }
@@ -24,15 +26,15 @@ S e() {
 }
 
 S mapping(F f, S x) {
-    return f == INF ? x : f;
+    return (f == ID ? x : f);
 }
 
 F composition(F f, S g) {
-    return f == INF ? g : f;
+    return (f == ID ? g : f);
 }
 
 F id() {
-    return 0;
+    return ID;
 }
 
 int main() {
@@ -43,9 +45,9 @@ int main() {
     rep(i,n) {
         int l, r;
         cin >> l >> r;
-        int mx = seg.prod(l, r+1);
-        seg.apply(l, r+1, mx+1);
-        cout << mx+1 << endl;
+        int h = seg.prod(l-1, r) + 1;
+        seg.apply(l-1, r, h);
+        cout << h << endl;
     }
     return 0;
 }
