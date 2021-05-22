@@ -13,9 +13,24 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
-    int h, w;
-    cin >> h >> w;
-    if (h == 1||w==1) cout << h*w << endl;
-    else cout << ((h+1)/2) * ((w+1)/2) << endl;
+    int n, k;
+    cin >> n >> k;
+    vector<int> a(n);
+    rep(i,n) cin >> a[i];
+    int l = 0, r = 0;
+    map<int, int> mp;
+    int ans = 0;
+    while (l < n) {
+        while (r < n) {
+            mp[a[r]]++;
+            r++;
+            if (mp.size() <= k) chmax(ans, r-l);
+            else break;
+        }
+        mp[a[l]]--;
+        if (mp[a[l]] == 0) mp.erase(a[l]);
+        l++;
+    }
+    cout << ans << endl;
     return 0;
 }
