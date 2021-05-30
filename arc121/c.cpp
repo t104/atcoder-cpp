@@ -12,6 +12,18 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+void test(vector<int> &p, vector<int> &ans) {
+    int n = p.size();
+    rep(i,n) {
+        assert(p[i] == i);
+    }
+
+    int m = ans.size();
+    rep(i,m) {
+        assert(i%2 == ans[i]%2);
+    }
+}
+
 void solve() {
     int n;
     cin >> n;
@@ -39,6 +51,9 @@ void solve() {
             if (p[i] == r) {
                 if (cnt%2 != i%2) {
                     sw(cnt%2, cnt%2+1);
+                    if (r <= cnt%2+1) {
+                        r = cnt%2+1;
+                    }
                     break;
                 }
                 while (i < r) {
@@ -50,6 +65,8 @@ void solve() {
             }
         }
     }
+
+    test(p, ans);
 
     cout << cnt << endl;
     for (auto ai: ans) {
