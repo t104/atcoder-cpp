@@ -34,10 +34,14 @@ int main() {
     dp[0][0] = 0;
     for (int i = 1; i <= k; ++i) {
         for (int s = 0; s < (1<<n); ++s) {
+            int x = 0;
             for (int j = s; j != 0; j = (j-1) & s) {
                 chmin(dp[i][s], max(dp[i-1][s-j], d[j]));
+                x++;
             }
+            cout << x << ' ';
         }
+        cout << endl;
     }
     cout << dp[k][(1<<n)-1] << endl;
     return 0;
