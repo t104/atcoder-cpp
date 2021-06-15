@@ -16,7 +16,7 @@ using mint = modint1000000007;
 
 // combination mod prime
 // https://www.youtube.com/watch?v=8uowVvQ_-Mo&feature=youtu.be&t=1619
-const int MAX_N = 1000005;
+const int MAX_N = 2000010;
 struct combination {
   vector<mint> fact, ifact;
   combination(int n):fact(n+1),ifact(n+1) {
@@ -42,21 +42,7 @@ int main() {
         cout << 0 << endl;
         return 0;
     }
-
-    vector<mint> dp(n+1);
-    dp[0] = 1;
-    for (int i = 1; i <= n+m; ++i) {
-        // cout << min((i+k-2)/2, n-1) << endl;
-        for (int j = min((i+k-2)/2, n-1); 0 <= j; --j) {
-            dp[j+1] += dp[j];
-        }
-        // rep(j,n+1) {
-        //     cout << dp[j].val() << ' ';
-        // }
-        // cout << endl;
-    }
     mint ans = c(n+m, n) - c(n+m, m+k+1);
     cout << ans.val() << endl;
-    cout << dp[n].val() << endl;
     return 0;
 }
