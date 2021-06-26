@@ -10,7 +10,7 @@ template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b &&
 template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
 using ll = long long;
 using ld = long double;
-using P = pair<int,int>;
+using P = pair<string,int>;
 
 const int SZ = 20;
 
@@ -26,7 +26,33 @@ int main() {
     cin >> n >> m;
     s.resize(m);
     rep(i,m) cin >> s[i];
-    rep(i,SZ) ans[i] = s[i] + ans[i].substr(s[i].size(), SZ - s[i].size());
+
+    vector<P> cand;
+
+    for (auto &sub: s) {
+        bool find = false;
+        for (auto &[t, cnt] : cand) {
+            if (t.find(sub) != string::npos) {
+                cnt++;
+                find = true;
+                break;
+            }
+        }
+        if (!find) {
+            cand.emplace_back(sub, 1);
+        }
+    }
+
+    sort(cand.begin(), cand.end(), [&](auto x, auto y){
+        return y.second < x.second;
+    });
+
+    rep(i,min(SZ, (int)cand.size())) {
+        int len = cand[i].first.size();
+        ans[i] = cand[i].first + ans[i].substr(len, SZ - len);
+    }
+
+
     print_ans();
     return 0;
 }
