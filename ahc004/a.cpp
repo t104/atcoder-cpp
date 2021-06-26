@@ -10,7 +10,7 @@ template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b &&
 template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
 using ll = long long;
 using ld = long double;
-using P = pair<int,int>;
+using P = pair<string,int>;
 
 const int SZ = 20;
 clock_t start;
@@ -21,11 +21,13 @@ vector<string> s;
 
 struct Torus {
     vector<string> val;
-    vector<vector<int>> hword, vword;
-    vector<int> missing;
+    vector<queue<int>> hword, vword;
+    queue<int> missing;
 
     Torus(vector<string> val): val(val) {
-        hword.resize(SZ), vword.resize(SZ);
+        hword.resize(SZ);
+        vword.resize(SZ);
+        rep(i,m) missing.push(i);
     }
 
     void hinsert(int h, int w, string &s, string &original) {
@@ -72,73 +74,41 @@ struct Torus {
         return false;
     }
 
-    int hscore(int l, int r) {
-        int res = 0;
-        for (int h = l; h < r; ++h) {
-            vector<int> ok, ng;
-            for (auto id : hword[h]) {
-                if (hfind(h, s[id])) {
-                    ok.push_back(id);
-                }
-                else {
-                    ng.push_back(id);
-                }
+    int score(int sh, int lh, int sw, int lw) {
+        int res = m - missing.size();
+        rep(l, lh) {
+            int h = (sh + lh) % SZ;
+            while (!hword[h].empty()) {
+                missing.push(hword[h].front()); hword[h].pop();
             }
-            for (auto id : missing) {
-                if (hfind(h, s[id])) {
-                    ok.push_back(id);
-                }
-                else {
-                    ng.push_back(id);
-                }
-            }
-            res += ok.size() - hword[h].size();
-            swap(hword[h], ok);
-            swap(missing, ng);
         }
-        return res;
-    }
 
-    int vscore(int l, int r) {
-        int res = 0;
-        for (int w = l; w < r; ++w) {
-            vector<int> ok, ng;
-            for (auto id : vword[w]) {
-                if (vfind(w, s[id])) {
-                    ok.push_back(id);
-                }
-                else {
-                    ng.push_back(id);
-                }
+        rep(l, lw) {
+            int w = (sw + lw) % SZ;
+            while (!vword[w].empty()) {
+                missing.push(vword[w].front()); vword[w].pop();
             }
-            for (auto id : missing) {
-                if (vfind(w, s[id])) {
-                    ok.push_back(id);
-                }
-                else {
-                    ng.push_back(id);
-                }
-            }
-            res += ok.size() - vword[w].size();
-            swap(vword[w], ok);
-            swap(missing, ng);
         }
+
+        res += score();
         return res;
     }
 
     int score() {
         int res = 0;
-        rep(i,m) {
+        queue<int> tmp;
+        while (!missing.empty()) {
+            int id = missing.front(); missing.pop();
             bool ok = false;
             rep(j,SZ) {
-                if (hfind(j, s[i])) {
+                if (hfind(j, s[id])) {
                     ok = true;
-                    hword[j].push_back(i);
+                    hword[j].push(id);
                     break;
                 }
-                if (vfind(j, s[i])) {
+                if (vfind(j, s[id])) {
                     ok = true;
-                    vword[j].push_back(i);
+                    vword[j].push(id);
                     break;
                 }
             }
@@ -146,14 +116,24 @@ struct Torus {
                 res++;
             }
             else {
-                missing.push_back(i);
+                tmp.push(id);
             }
         }
+        swap(missing, tmp);
         return res;
     }
 
     void print() {
         for (auto &v : val) cout << v << endl;
+    }
+
+    void testsz() {
+        int cnt = missing.size();
+        rep(i,SZ) {
+            cnt += hword[i].size();
+            cnt += vword[i].size();
+        }
+        cout << cnt << ' ' << m << endl;
     }
 };
 
@@ -164,7 +144,7 @@ int main() {
     s.resize(m);
     rep(i,m) cin >> s[i];
 
-    vector<pair<string,int>> cand;
+    vector<P> cand;
 
     for (auto &sub : s) {
         bool find = false;
@@ -212,6 +192,7 @@ int main() {
     mt19937 engine(seed_gen());
 
     int score = torus.score();
+
     rep(h, SZ) {
         string original = torus.val[h];
         string best = original;
@@ -219,7 +200,7 @@ int main() {
         for (int dw = 1; dw < 20; ++dw) {
             string now = original.substr(dw, SZ - dw) + original.substr(0, dw);
             torus.hinsert(h, 0, now, tmp);
-            int dif = torus.hscore(max(0, h-1), min(h+2, SZ)) + torus.vscore(0, SZ);
+            int dif = torus.score(0, SZ, 0, SZ);
             if (0 < dif) {
                 swap(best, now);
                 score += dif;
@@ -227,6 +208,8 @@ int main() {
         }
         torus.hinsert(h, 0, best, tmp);
     }
+
+
     while (true) {
         rep(i,m) {
             if (LIMIT < clock() - start) {
@@ -238,12 +221,14 @@ int main() {
             int h = engine() % SZ;
             int w = engine() % SZ;
             torus.hinsert(h, w, s[i], original);
-            if (chmax(score, torus.score())) {
+            int hs = torus.score(0, SZ, 0, SZ);
+            if (chmax(score, hs)) {
                 continue;
             }
             torus.hinsert(h, w, original, changed);
             torus.vinsert(h, w, s[i], original);
-            if (chmax(score, torus.score())) {
+            int vs = torus.score(0, SZ, 0, SZ);
+            if (chmax(score, vs)) {
                 continue;
             }
             torus.vinsert(h, w, original, changed);
