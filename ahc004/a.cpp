@@ -24,8 +24,7 @@ struct Torus {
     int c;
     bitset<1000> found;
 
-    Torus() {
-        val.assign(SZ, string(SZ, '.'));
+    Torus(vector<string> val): val(val) {
         c = 0;
     }
 
@@ -110,27 +109,74 @@ int main() {
     s.resize(m);
     rep(i,m) cin >> s[i];
 
-    Torus torus;
+    vector<P> cand;
+
+    for (auto &sub : s) {
+        bool find = false;
+        for (auto &[t, cnt] : cand) {
+            if (t.find(sub) != string::npos) {
+                cnt++;
+                find = true;
+                break;
+            }
+        }
+        if (find) continue;
+        for (auto &[t, cnt] : cand) {
+            if (sub.find(t) != string::npos) {
+                cnt++;
+                find = true;
+                t = sub;
+                break;
+            }
+        }
+        if (!find) {
+            cand.emplace_back(sub, 1);
+        }
+    }
+
+    sort(cand.begin(), cand.end(), [&](auto x, auto y){
+        return y.second < x.second;
+    });
+
+    vector<string> initial(SZ);
+    for (auto &[t, cnt] : cand) {
+        rep(i,SZ) {
+            if (initial[i].size() + t.size() <= SZ) {
+                initial[i] += t;
+                break;
+            }
+        }
+    }
+
+    rep(i,SZ) {
+        initial[i] += string(SZ - initial[i].size(), '.');
+    }
+
+    Torus torus(initial);
     random_device seed_gen;
     mt19937 engine(seed_gen());
 
-    int score = 0;
+    int score = torus.score();
     while (true) {
         rep(i,m) {
         if (LIMIT < clock() - start) {
             torus.print();
             return 0;
         }
-            if (torus.exists(i)) continue;
+        if (torus.exists(i)) continue;
             string original = "";
             string changed = "";
             int h = engine() % SZ;
             int w = engine() % SZ;
             torus.hinsert(h, w, s[i], original);
-            if (chmax(score, torus.score())) continue;
+            if (chmax(score, torus.score())) {
+                continue;
+            }
             torus.hinsert(h, w, original, changed);
             torus.vinsert(h, w, s[i], original);
-            if (chmax(score, torus.score())) continue;
+            if (chmax(score, torus.score())) {
+                continue;
+            }
             torus.vinsert(h, w, original, changed);
         }
     }
