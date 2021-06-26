@@ -26,6 +26,7 @@ int main() {
     cin >> n >> m;
     s.resize(m);
     rep(i,m) cin >> s[i];
+    rep(i,SZ) ans[i] = s[i] + ans[i].substr(s[i].size(), SZ - s[i].size());
     print_ans();
     return 0;
 }
