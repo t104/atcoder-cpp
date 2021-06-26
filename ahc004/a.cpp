@@ -38,6 +38,14 @@ int main() {
                 break;
             }
         }
+        for (auto &[t, cnt] : cand) {
+            if (sub.find(t) != string::npos) {
+                cnt++;
+                find = true;
+                t = sub;
+                break;
+            }
+        }
         if (!find) {
             cand.emplace_back(sub, 1);
         }
