@@ -16,7 +16,7 @@ const int SZ = 20;
 
 int n, m;
 vector<string> s;
-vector<string> ans(SZ, string(SZ, '.'));
+vector<string> ans(SZ);
 
 void print_ans() {
     for (auto &si : ans) cout << si << endl;
@@ -47,11 +47,18 @@ int main() {
         return y.second < x.second;
     });
 
-    rep(i,min(SZ, (int)cand.size())) {
-        int len = cand[i].first.size();
-        ans[i] = cand[i].first + ans[i].substr(len, SZ - len);
+    for (auto &[ci, cnt] : cand) {
+        rep(i,SZ) {
+            if (ans[i].size() + ci.size() <= SZ) {
+                ans[i] += ci;
+                break;
+            }
+        }
     }
 
+    rep(i,SZ) {
+        ans[i] += string(SZ-ans[i].size(), '.');
+    }
 
     print_ans();
     return 0;
