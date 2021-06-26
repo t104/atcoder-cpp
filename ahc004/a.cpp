@@ -10,7 +10,7 @@ template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b &&
 template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
 using ll = long long;
 using ld = long double;
-using P = pair<string,int>;
+using P = pair<int,int>;
 
 const int SZ = 20;
 clock_t start;
@@ -21,11 +21,11 @@ vector<string> s;
 
 struct Torus {
     vector<string> val;
-    int c;
-    bitset<1000> found;
+    vector<vector<int>> hword, vword;
+    vector<int> missing;
 
     Torus(vector<string> val): val(val) {
-        c = 0;
+        hword.resize(SZ), vword.resize(SZ);
     }
 
     void hinsert(int h, int w, string &s, string &original) {
@@ -72,29 +72,84 @@ struct Torus {
         return false;
     }
 
+    int hscore(int l, int r) {
+        int res = 0;
+        for (int h = l; h < r; ++h) {
+            vector<int> ok, ng;
+            for (auto id : hword[h]) {
+                if (hfind(h, s[id])) {
+                    ok.push_back(id);
+                }
+                else {
+                    ng.push_back(id);
+                }
+            }
+            for (auto id : missing) {
+                if (hfind(h, s[id])) {
+                    ok.push_back(id);
+                }
+                else {
+                    ng.push_back(id);
+                }
+            }
+            res += ok.size() - hword[h].size();
+            swap(hword[h], ok);
+            swap(missing, ng);
+        }
+        return res;
+    }
+
+    int vscore(int l, int r) {
+        int res = 0;
+        for (int w = l; w < r; ++w) {
+            vector<int> ok, ng;
+            for (auto id : vword[w]) {
+                if (vfind(w, s[id])) {
+                    ok.push_back(id);
+                }
+                else {
+                    ng.push_back(id);
+                }
+            }
+            for (auto id : missing) {
+                if (vfind(w, s[id])) {
+                    ok.push_back(id);
+                }
+                else {
+                    ng.push_back(id);
+                }
+            }
+            res += ok.size() - vword[w].size();
+            swap(vword[w], ok);
+            swap(missing, ng);
+        }
+        return res;
+    }
+
     int score() {
         int res = 0;
         rep(i,m) {
             bool ok = false;
             rep(j,SZ) {
-                if (hfind(j, s[i]) || vfind(j, s[i])) {
+                if (hfind(j, s[i])) {
                     ok = true;
+                    hword[j].push_back(i);
+                    break;
+                }
+                if (vfind(j, s[i])) {
+                    ok = true;
+                    vword[j].push_back(i);
                     break;
                 }
             }
             if (ok) {
-                found.set(i, 1);
                 res++;
             }
             else {
-                found.set(i, 0);
+                missing.push_back(i);
             }
         }
         return res;
-    }
-
-    bool exists(int idx) {
-        return found.test(idx);
     }
 
     void print() {
@@ -109,7 +164,7 @@ int main() {
     s.resize(m);
     rep(i,m) cin >> s[i];
 
-    vector<P> cand;
+    vector<pair<string,int>> cand;
 
     for (auto &sub : s) {
         bool find = false;
@@ -157,13 +212,27 @@ int main() {
     mt19937 engine(seed_gen());
 
     int score = torus.score();
+    rep(h, SZ) {
+        string original = torus.val[h];
+        string best = original;
+        string tmp = "";
+        for (int dw = 1; dw < 20; ++dw) {
+            string now = original.substr(dw, SZ - dw) + original.substr(0, dw);
+            torus.hinsert(h, 0, now, tmp);
+            int dif = torus.hscore(max(0, h-1), min(h+2, SZ)) + torus.vscore(0, SZ);
+            if (0 < dif) {
+                swap(best, now);
+                score += dif;
+            }
+        }
+        torus.hinsert(h, 0, best, tmp);
+    }
     while (true) {
         rep(i,m) {
-        if (LIMIT < clock() - start) {
-            torus.print();
-            return 0;
-        }
-        if (torus.exists(i)) continue;
+            if (LIMIT < clock() - start) {
+                torus.print();
+                return 0;
+            }
             string original = "";
             string changed = "";
             int h = engine() % SZ;
