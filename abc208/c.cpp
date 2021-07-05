@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+#include <atcoder/all>
+using namespace std;
+using namespace atcoder;
+#define INF 1001001001
+#define LINF (1LL<<60)
+#define rep(i,n) for (int i = 0; i < (n); ++i)
+template<typename T1,typename T2> inline bool chmin(T1 &a,T2 b){ return a > b && (a = b, true); }
+template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b && (a = b, true); }
+template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
+using ll = long long;
+using ld = long double;
+using P = pair<int,int>;
+
+int main() {
+    ll n, k;
+    cin >> n >> k;
+    vector<P> a(n);
+    rep(i,n) {
+        int ai;
+        cin >> ai;
+        a[i] = {ai, i};
+    }
+    sort(a.begin(), a.end());
+    ll q = k / n;
+    vector<ll> ans(n, q);
+    rep(i,k%n) {
+        ans[a[i].second]++;
+    }
+    rep(i,n) cout << ans[i] << endl;
+
+    return 0;
+}
