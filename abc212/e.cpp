@@ -20,7 +20,12 @@ int n, m, k;
 vector<vector<int>> g;
 vector<vector<mint>> dp;
 
-
+void print_dp() {
+    rep(i,k+1) {
+        rep(j,n) cout << dp[i][j].val() << ' ';
+        cout << endl;
+    }
+}
 
 int main() {
     cin >> n >> m >> k;
@@ -32,7 +37,20 @@ int main() {
         g[u].push_back(v);
         g[v].push_back(u);
     }
-    dp.resize(k+1);
+    dp.resize(k+1, vector<mint>(n));
     dp[0][0] = 1;
+    rep(i,k) {
+        mint sum = 0;
+        rep(j,n) sum += dp[i][j];
+        rep(j,n) dp[i+1][j] = sum;
+        rep(j,n) {
+            dp[i+1][j] -= dp[i][j];
+            for (auto v: g[j]) {
+                dp[i+1][v] -= dp[i][j];
+            }
+        }
+    }
+    // print_dp();
+    cout << dp[k][0].val() << endl;
     return 0;
 }
