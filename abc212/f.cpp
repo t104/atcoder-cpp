@@ -12,13 +12,47 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+struct edge {
+    int to, s, t;
+    edge(int to, int s, int t): to(to), s(s), t(t) {}
+};
+
+vector<vector<edge>> g;
+
+void dfs(int x, int y, int z) {
+    for (auto &e: g[y]) {
+        if (z <= e.s) break;
+        if (x <= e.s) {
+            if (z <= e.t) {
+                cout << y+1 << ' ' << e.to+1 << endl;
+                return;
+            }
+            return dfs(e.t, e.to, z);
+        }
+    }
+    cout << y+1 << endl;
+}
+
 int main() {
-    int a,b;
-    cin >> a >> b;
-    string ans;
-    if (0 < a*b) ans = "Alloy";
-    else if (0 < a) ans = "Gold";
-    else ans = "Silver";
-    cout << ans << endl;
+    int n, m, q;
+    cin >> n >> m >> q;
+    g.resize(n);
+    rep(i,m) {
+        int a, b, s, t;
+        cin >> a >> b >> s >> t;
+        --a, --b;
+        g[a].emplace_back(b, s, t);
+    }
+    for (auto &edges: g) {
+        sort(edges.begin(), edges.end(), [](auto x, auto y){
+            return x.s < y.s;
+        });
+    }
+    while (q--) {
+        int x, y, z;
+        cin >> x >> y >> z;
+        y--;
+        dfs(x, y, z);
+    }
     return 0;
 }
