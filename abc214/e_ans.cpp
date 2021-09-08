@@ -1,3 +1,7 @@
+/**
+ * Submition https://atcoder.jp/contests/abc214/submissions/25014356
+**/
+
 #include <bits/stdc++.h>
 #include <atcoder/all>
 using namespace std;
@@ -10,39 +14,35 @@ template<typename T1,typename T2> inline bool chmax(T1 &a,T2 b){ return a < b &&
 template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r){return l <= val && val < r;}
 using ll = long long;
 using ld = long double;
-using P = pair<ll,ll>;
+using P = pair<int,int>;
 
 void solve() {
     int n;
     cin >> n;
-    vector<P> ranges(n);
-    rep(i,n) cin >> ranges[i].first >> ranges[i].second;
-    sort(ranges.begin(), ranges.end());
-    int l = 0, i = 0;
-    priority_queue<int, vector<int>, greater<int>> que;
-    while (i < n || !que.empty()) {
-        if (que.empty()) {
-            l = ranges[i].first;
+    vector<P> p(n);
+    rep(i,n) cin >> p[i].first >> p[i].second;
+    sort(p.begin(), p.end());
+    priority_queue<int, vector<int>, greater<int>> q;
+    int x = 1;
+    p.emplace_back(INF, INF);
+    for (auto [l, r]: p) {
+        while (x < l && q.size()) {
+            if (q.top() < x) {
+                cout << "No" << endl;
+                return;
+            }
+            q.pop();
+            ++x;
         }
-        while (ranges[i].first == l) {
-            que.push(ranges[i].second);
-            i++;
-        }
-        if (que.top() < l) {
-            cout << "No" << endl;
-            return;
-        } else {
-            que.pop();
-            l++;
-        }
+        x = l;
+        q.push(r);
     }
     cout << "Yes" << endl;
 }
 
 int main() {
-    int t;
-    cin >> t;
-    while(t--) solve();
+    int T;
+    cin >> T;
+    rep(ti, T) solve();
     return 0;
 }
-
