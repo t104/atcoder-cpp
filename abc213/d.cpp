@@ -20,7 +20,8 @@ const int not_visited = -2;
 void dfs(int v, int p) {
     ans.push_back(v);
     if (visited[v] == not_visited) visited[v] = p;
-    for (auto nv: g[v]) {
+    while (g[v].size()) {
+        int nv = g[v].back(); g[v].pop_back();
         if (visited[nv] == not_visited) {
             dfs(nv, v);
             return;
@@ -42,10 +43,11 @@ int main() {
         g[v].push_back(u);
     }
     rep(i,n) {
-        sort(g[i].begin(), g[i].end());
+        sort(g[i].rbegin(), g[i].rend());
     }
     dfs(0, -1);
-    for (auto a: ans) cout << a+1 << endl;
+    for (auto a: ans) cout << a+1 << ' ';
+    cout << endl;
 
     return 0;
 }
