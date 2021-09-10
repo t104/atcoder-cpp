@@ -12,7 +12,39 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+const int MX = 200010;
+
+
 int main() {
+    int n;
+    cin >> n;
+    vector<P> p(n);
+    rep(i,n) cin >> p[i].first >> p[i].second;
+    sort(p.begin(), p.end());
+    int l = 0, r = p[n-1].first - p[0].first;
+    while (l+1 < r) {
+        int m = (l+r) / 2;
+        bool ok = true;
+        rep(i,n) {
+            auto itr = lower_bound(p.begin(), p.end(), make_pair(p[i].first + m, 0));
+            if (itr == p.end()) break;
+            while (itr != p.end()) {
+                if (abs((*itr).first - p[i].first) <= m) {
+                    itr++;
+                    continue;
+                }
+                int d = abs((*itr).second - p[i].second);
+                if (m < d) {
+                    ok = false;
+                    break;
+                }
+                itr++;
+            }
+        }
+        if (ok) r = m;
+        else l = m;
+    }
+    cout << r << endl;
     return 0;
 }
 
