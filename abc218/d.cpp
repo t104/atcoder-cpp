@@ -18,19 +18,16 @@ int main() {
     vector<int> x(n), y(n);
     rep(i,n) cin >> x[i] >> y[i];
     set<P> st;
-    set<vector<int>> cnt;
+    int ans = 0;
     rep(i,n) st.insert(make_pair(x[i], y[i]));
     rep(i,n) {
-        for (int j = i+1; j < n; ++j) {
-            if (x[i] == x[j]) continue;
-            if (y[i] == y[j]) continue;
-            // cout << min(x[i], x[j]) << ' ' <<  min(y[i], y[j]) << ' ' <<  max(x[i], x[j]) << ' ' <<  max(y[i], y[j]) << endl;
-            if (st.count(make_pair(x[i], y[j])) && st.count({x[j], y[i]})) {
-                cnt.insert({min(x[i], x[j]), min(y[i], y[j]), max(x[i], x[j]), max(y[i], y[j])});
+        rep(j,n) {
+            if (x[i] < x[j] && y[i] < y[j] && st.count({x[i], y[j]}) && st.count({x[j], y[i]})) {
+                ans++;
             }
         }
     }
-    cout << cnt.size() << endl;
+    cout << ans << endl;
     return 0;
 }
 
