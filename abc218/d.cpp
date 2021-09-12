@@ -17,12 +17,18 @@ int main() {
     cin >> n;
     vector<int> x(n), y(n);
     rep(i,n) cin >> x[i] >> y[i];
-    set<P> st;
+    unordered_set<int> st;
+    auto count = [&](int x, int y) {
+        return st.count(x*2000 + y);
+    };
+    auto add = [&](int x, int y) {
+        st.insert(x*2000 + y);
+    };
     int ans = 0;
-    rep(i,n) st.insert(make_pair(x[i], y[i]));
+    rep(i,n) add(x[i], y[i]);
     rep(i,n) {
         rep(j,n) {
-            if (x[i] < x[j] && y[i] < y[j] && st.count({x[i], y[j]}) && st.count({x[j], y[i]})) {
+            if (x[i] < x[j] && y[i] < y[j] && count(x[i], y[j]) && count(x[j], y[i])) {
                 ans++;
             }
         }
