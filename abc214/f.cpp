@@ -12,7 +12,26 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+using mint = modint1000000007;
+
+const int MX = 200010;
+mint dp[MX];
+int n;
+
 int main() {
+    string s;
+    cin >> s;
+    n = s.size();
+    dp[0] = 1;
+    mint ans = 0;
+    rep(i,n) {
+        for (int j = i; 0 <= j; --j) {
+            dp[i+2] += dp[j];
+            if (j && s[j-1] == s[i]) break;
+        }
+        ans += dp[i+2];
+    }
+    cout << ans.val() << endl;
     return 0;
 }
 
