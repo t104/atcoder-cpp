@@ -37,6 +37,5 @@
 
 # Temporary file
 combined.cpp
-.vscode/
 .DS_Store
 d.dSYM

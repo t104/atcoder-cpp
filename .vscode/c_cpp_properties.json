@@ -1,0 +1,17 @@
+{
+    "configurations": [
+      {
+        "name": "cpp",
+        "intelliSenseMode": "gcc-x64",
+        "compilerPath": "/usr/bin/gcc",
+        "includePath": [
+          "~/git/ac-library",
+          "${workspaceFolder}/**"
+        ],
+        "defines": [],
+        "cStandard": "c11",
+        "cppStandard": "c++17"
+      }
+    ],
+    "version": 4
+}
