@@ -15,6 +15,21 @@ using P = pair<int,int>;
 using mint = modint998244353;
 
 int main() {
+    int n, d;
+    cin >> n >> d;
+    mint ans;
+    vector<mint> two(n+5, 1);
+    rep(i,n) two[i+1] = two[i] * 2;
+    rep(i, d+1) {
+        int a = i, b = d - i;
+        if (b < a) break;
+        swap(a, b);
+        if (n <= a) continue;
+        mint now = two[max(b-1, 0)] * (two[n] - two[a]);
+        if (a != b) now *= 2;
+        ans += now;
+    }
+    cout << ans.val() << endl;
     return 0;
 }
 
