@@ -22,13 +22,12 @@ int main() {
     rep(i,n) two[i+1] = two[i] * 2;
     rep(i, d+1) {
         int a = i, b = d - i;
-        if (b < a) break;
-        swap(a, b);
-        if (n <= a) continue;
-        mint now = two[max(b-1, 0)] * (two[n] - two[a]);
-        if (a != b) now *= 2;
+        if (n <= max(a, b)) continue;
+        mint k = two[n - max(a, b)] - mint(1);
+        mint now = k * two[max(a-1, 0)] * two[max(b-1, 0)];
         ans += now;
     }
+    ans *= 2;
     cout << ans.val() << endl;
     return 0;
 }
