@@ -16,39 +16,22 @@ using mint = modint998244353;
 
 const int MX = 300010;
 
-int op (int x, int y) {
-    return min(x, y);
-}
-
-int e () {
-    return INF;
-}
-
 int main() {
     int n;
     cin >> n;
-    vector<P> a(n);
-    vector<int> compressed(n);
+    vector<int> a(n), c(n);
+    rep(i,n) cin >> a[i];
+    vector<int> b = a;
+    sort(b.begin(), b.end());
+    b.erase(unique(b.begin(), b.end()), b.end());
     rep(i,n) {
-        cin >> a[i].first;
-        a[i].second = i;
+        c[i] = lower_bound(b.begin(), b.end(), a[i]) - b.begin();
     }
-    sort(a.begin(), a.end());
-    int rank = 0, prev = a[0].first;
-    rep(i,n) {
-        if (a[i].first != prev) rank++;
-        compressed[a[i].second] = rank;
-        prev = a[i].first;
-    }
-    vector<int> first(MX, -1);
+    fenwick_tree<mint> tree(MX);
     mint ans = 0;
     rep(i,n) {
-        rep(j, compressed[i] + 1) {
-            if (0first[j]) {
-                ans += i - first[j];
-            }
-        }
-        first[compressed[i]] = i;
+        if (0 < i) ans += mint(2).pow(i-1) * tree.sum(0, c[i]+1);
+        tree.add(c[i], mint(2).pow(i).inv());
     }
     cout << ans.val() << endl;
     return 0;
