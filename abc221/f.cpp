@@ -1,3 +1,5 @@
+// https://youtu.be/wMibKG0HyCc
+
 #include <bits/stdc++.h>
 #include <atcoder/all>
 using namespace std;
@@ -13,42 +15,67 @@ using ld = long double;
 using P = pair<int,int>;
 using mint = modint998244353;
 
-int n;
-vector<vector<int>> g;
-vector<mint> dp;
-const int MX = 200010;
+int n, N;
+vector<int> edge[440000];
+vector<int> dist;
+vector<int> parent;
+int D;
+int dp[440000];
 
-P dfs(int v, int p) {
-    P res = {1, 1};
-    map<int, int> depth;
-    for (auto nv: g[v]) {
-        if (nv == p) continue;
-        P p = dfs(nv, v);
-        depth[p.first] += p.second;
-        p.first++;
-        if (res.first < p.first) {
-            res = {p.first, 1};
-        } else if (res.first == p.first) {
-            res.second++;
-        }
+void dfs(int x, int last = -1) {
+    if (last == -1) dist[x] = 0;
+    else parent[x] = last;
+    for (auto to: edge[x]) {
+        if (to == last) continue;
+        dist[to] = dist[x] + 1;
+        dfs(to, x);
     }
-    
-    return res;
+}
+
+void dfs2(int x, int last = -1) {
+    if (last == -1) dist[x] = 0;
+    else parent[x] = last;
+    if (dist[x] == D / 2) dp[x] = 1;
+    for (auto to: edge[x]) {
+        if (to == last) continue;
+        dist[to] = dist[x] + 1;
+        dfs2(to, x);
+        dp[x] += dp[to];
+    }
 }
 
 int main() {
     cin >> n;
-    g.resize(n);
-    rep(i,n-1) {
+    N = n + (n - 1);
+    dist.resize(N);
+    parent.resize(N);
+    rep(i, n-1) {
         int u, v;
         cin >> u >> v;
         --u, --v;
-        g[u].push_back(v);
-        g[v].push_back(u);
+        edge[u].push_back(n+i);
+        edge[n+i].push_back(u);
+        edge[v].push_back(n+i);
+        edge[n+i].push_back(v);
     }
-    dfs(0, -1);
-    int x = 0;
 
+    dfs(0);
+    int farest = max_element(dist.begin(), dist.end()) - dist.begin();
+    dfs(farest);
+    int farest2 = max_element(dist.begin(), dist.end()) - dist.begin();
+    int now = farest2;
+    D = dist[farest2];
+    rep(i, D / 2) now = parent[now];
+    int center = now;
+
+    dfs2(center);
+    mint ans = 1;
+    for (auto neighb: edge[center]) {
+        ans *= dp[neighb] + 1;
+    }
+    ans -= 1;
+    ans -= dp[center];
+
+    cout << ans.val() << endl;
     return 0;
 }
-
