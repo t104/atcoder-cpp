@@ -13,6 +13,24 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
+    int n;
+    cin >> n;
+    vector<ll> ans(n+1);
+    map<ll, int> mp;
+    rep(i,n) {
+        int a, b;
+        cin >> a >> b;
+        mp[a]++;
+        mp[a + b]--;
+    }
+    ll sum = 0, prev = 0;
+    for (auto &p: mp) {
+        ans[sum] += p.first - prev;
+        sum += p.second;
+        prev = p.first;
+    }
+    for (int i = 1; i <= n; ++i) cout << ans[i] << ' ';
+    cout << endl;
     return 0;
 }
 

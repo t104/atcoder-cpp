@@ -13,6 +13,11 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
+    ll a, b;
+    cin >> a >> b;
+    ll ans = 1;
+    rep(i, a-b) ans *= 32LL;
+    cout << ans << endl;
     return 0;
 }
 
