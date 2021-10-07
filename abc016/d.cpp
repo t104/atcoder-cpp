@@ -14,22 +14,35 @@ using P = pair<int,int>;
 
 const double EPS = 1e-5;
 
+struct Point {
+    int x, y;
+    Point(int x=0, int y=0): x(x), y(y) {}
+};
+
+// ベクトル ab と ac の外積を求める
+int cross_product(Point a, Point b, Point c) {
+    return (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y);
+}
+
+// ab と cd が交点を持つかを返す
+// <=> abc と abd の符号付き面積の片方が正で片方が負になり、
+// cda と cdb の符号付き面積の片方が正で片方が負になるか調べる
+bool crossed(Point a, Point b, Point c, Point d) {
+    ll s1 = cross_product(a, b, c);
+    ll s2 = cross_product(a, b, d);
+    ll s3 = cross_product(c, d, a);
+    ll s4 = cross_product(c, d, b);
+    return s1 * s2 < 0 && s3 * s4 < 0;
+}
+
 int main() {
-    int ax, ay, bx, by;
+    Point a, b;
     int n;
-    cin >> ax >> ay >> bx >> by >> n;
-    int dx = ax - bx, dy = ay - by;
-    vector<int> X(n), Y(n);
-    rep(i,n) cin >> X[i] >> Y[i];
+    cin >> a.x >> a.y >> b.x >> b.y >> n;
+    vector<Point> V(n);
+    rep(i,n) cin >> V[i].x >> V[i].y;
     int tot = 0;
-    rep(i,n) {
-        int dxi = X[i] - X[(i+1)%n], dyi = Y[i] - Y[(i+1)%n];
-        ll s1 = dy * (ax - X[i]) - dx * (ay - Y[i]);
-        ll s2 = dy * (ax - X[(i+1)%n]) - dx * (ay - Y[(i+1)%n]);
-        ll s3 = dyi * (X[i] - ax) - dxi * (Y[i] - ay);
-        ll s4 = dyi * (X[i] - bx) - dxi * (Y[i] - by);
-        if (s1 * s2 < 0 && s3 * s4 < 0) tot++;
-    }
+    rep(i,n) if (crossed(a, b, V[i], V[(i+1)%n])) tot++;
     cout << tot / 2 + 1 << endl;
     return 0;
 }
