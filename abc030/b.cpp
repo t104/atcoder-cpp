@@ -12,26 +12,40 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
-vector<vector<int>> edges;
-vector<int> h, go, back;
+struct edge {
+    int to, use;
+    edge(int to): to(to) {
+        use = 0;
+    }
+};
 
+vector<int> h;
+vector<vector<edge>> edges;
+vector<int> use;
 int ans;
 
-void dfs(int v, int p, int &hoseki, int &d) {
-    go[v] = d;
-    hoseki += h[v];
-    for (auto nv: edges[v]) {
-        if (nv == p) continue;
-        int hoseki_now = hoseki;
-        int d_now = d;
-        d++;
-        dfs(nv, v, hoseki, d);
-        if (hoseki_now == hoseki) {
-            ans += d - d_now;
+int dfs1(int v, int p) {
+    int tot = 0;
+    for (auto &[to, use]: edges[v]) {
+        if (to == p) continue;
+        int now = dfs1(to, v);
+        tot += now;
+        if (0 < now) {
+            use = 1;
         }
     }
-    back[v] = d;
-    d++;
+    tot += h[v];
+    return tot;
+}
+
+void dfs2(int v, int p) {
+    for (auto &[to, use]: edges[v]) {
+        if (to == p) continue;
+        if (use) {
+            ans++;
+            dfs2(to, v);
+        }
+    }
 }
 
 int main() {
@@ -39,20 +53,20 @@ int main() {
     cin >> n >> x;
     --x;
     h.resize(n);
-    go.resize(n);
-    back.resize(n);
     edges.resize(n);
+    use.resize(n);
     rep(i,n) cin >> h[i];
     rep(i,n-1) {
         int u, v;
         cin >> u >> v;
         --u, --v;
-        edges[u].push_back(v);
-        edges[v].push_back(u);
+        edges[u].emplace_back(v);
+        edges[v].emplace_back(u);
     }
     ans = 0;
-    int hoseki = 0, d = 0;
-    dfs(x, -1, hoseki, d);
-    cout << back[x] - go[x] - ans << endl;
+    dfs1(x, -1);
+    dfs2(x, -1);
+    ans *= 2;
+    cout << ans << endl;
     return 0;
 }
