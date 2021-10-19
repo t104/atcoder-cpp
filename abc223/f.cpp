@@ -12,7 +12,57 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+int op (int x, int y) {
+    return min(x, y);
+}
+
+int e () {
+    return INF;
+}
+
+int mapping(int f, int x) {
+    return f + x;
+}
+
+int composition(int f, int g) {
+    return f + g;
+}
+
+int id() {
+    return 0;
+}
+
 int main() {
+    int n, q;
+    string s;
+    cin >> n >> q >> s;
+    vector<int> p(n+1), sum(n+1);
+    rep(i,n) {
+        p[i+1] = s[i] == '(' ? 1 : -1;
+        sum[i+1] = p[i+1];
+        sum[i+1] += sum[i];
+    }
+    lazy_segtree<int, op, e, int, mapping, composition, id> tree(sum);
+    rep(i,q) {
+        int command, l, r;
+        cin >> command >> l >> r;
+        if (command == 1) {
+            if (p[l] == 1 && p[r] == -1) {
+                tree.apply(l, r, -2);
+            } else if (p[l] == -1 && p[r] == 1) {
+                tree.apply(l, r, 2);
+            }
+            swap(p[l], p[r]);
+        } else {
+            int ls = tree.get(l - 1), rs = tree.get(r);
+            int mi = tree.prod(l, r + 1);
+            if (ls == rs && ls == mi) {
+                cout << "Yes" << endl;
+            } else {
+                cout << "No" << endl;
+            }
+        }
+    }
     return 0;
 }
 
