@@ -22,5 +22,14 @@ int main() {
             cnt[i][s[i][j] - 'A']++;
         }
     }
+    bool ok = true;
+    int m1 = 0, m2 = 0;
+    rep(i,26) {
+        if (cnt[0][i] + cnt[1][i] < cnt[2][i]) ok = false;
+        m1 += max(0, cnt[2][i] - cnt[0][i]);
+        m2 += max(0, cnt[2][i] - cnt[1][i]);
+    }
+    if (n/2 < m1 || n/2 < m2) ok = false;
+    cout << (ok ? "YES" : "NO") << endl;
     return 0;
 }
