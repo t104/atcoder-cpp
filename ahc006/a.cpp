@@ -14,58 +14,86 @@ using P = pair<int,int>;
 
 const int N = 1000;
 const int n = 50;
+const int L = 800;
+
 
 struct point {
-    int h, w, order_id;
-    bool has_next;
-    point(int order_id = 0, int h = 0, int w = 0, bool has_next = false) : h(h), w(w), order_id(order_id), has_next(has_next) {}
+    int h, w, dst;
+    point(int h = -1, int w = -1, int dst = -1) : h(h), w(w), dst(dst) {
+    }
     
     int distance(point other) {
         return abs(h - other.h) + abs(w - other.w);
     }
+
+    bool has_dst() {
+        return dst != -1;
+    }
 };
 
-struct order {
-    point from, to;
-    order() {}
-    order(point from, point to): from(from), to(to) {}
+struct route {
+    vector<point> points;
+    int d;
+
+    route() {
+        points = {point(400, 400)};
+        d = 0;
+    }
+
+    void add(point p) {
+        points.push_back(p);
+        d += points.back().distance(p);
+    }
+
+    int size() {
+        return points.size();
+    }
 };
 
 int main() {
-    vector<order> orders(N);
+    vector<point> from(N), to(N);
+
     rep(i,N) {
         int a, b, c, d;
         cin >> a >> b >> c >> d;
-        orders[i] = order(point(i, a, b, true), point(i, c, d));
+        from[i] = point(a, b, i);
+        to[i] = point(c, d);
     }
-    vector<point> points;
-    vector<int> selected_order(n);
-    vector<point> route = {point(-1, 400, 400)};
-    
-    rep(i,n) selected_order[i] = i;
-    
-    for (auto &i: selected_order) {
-        points.push_back(orders[i].from);
-    }
-    
-    while (points.size()) {
-        sort(points.begin(), points.end(), [&](auto const &lhs, auto const &rhs){
-            return route.back().distance(rhs) < route.back().distance(lhs);
-        });
-        auto next = points.back(); points.pop_back();
-        route.push_back(next);
-        if (next.has_next) {
-            points.push_back(orders[next.order_id].to);
-        }
-    }
-    
-    route.push_back(point(-1, 400, 400));
 
-    cout << selected_order.size() << endl;
-    for (auto &od : selected_order) cout << od + 1 << ' ';
+    set<int> selected;
+    vector<point> cand = from;
+    route rt;
+    
+    
+    while (cand.size()) {
+        sort(cand.begin(), cand.end(), [&](auto const &lhs, auto const &rhs){
+            return rt.points.back().distance(rhs) < rt.points.back().distance(lhs);
+        });
+        
+        while (cand.size()) {
+            auto next = cand.back(); cand.pop_back();
+            if (next.has_dst()) {
+                if (selected.size() < n) {
+                    rt.add(next);
+                    cand.push_back(to[next.dst]);
+                    selected.insert(next.dst);
+                    break;
+                }
+            } else {
+                rt.add(next);
+                break;
+            }
+        }
+        
+    }
+    
+    rt.add(point(400, 400));
+
+    cout << selected.size() << endl;
+    for (auto &od : selected) cout << od + 1 << ' ';
     cout << endl;
-    cout << route.size() << endl;
-    for (auto &r : route) {
+    cout << rt.size() << endl;
+    for (auto &r : rt.points) {
         cout << r.h << ' ' << r.w << ' ';
     }
     cout << endl;
