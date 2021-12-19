@@ -12,7 +12,32 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+const int N = 1<< 20;
+vector<ll> a(N, -1);
+
 int main() {
+    int q;
+    cin >> q;
+    set<int> available;
+    rep(i, N) available.insert(i);
+    while (q--) {
+        int t;
+        ll x;
+        cin >> t >> x;
+        int h = x % N;
+        if (t == 1) {
+            auto it = available.lower_bound(h);
+            if (it == available.end()) {
+                h = 0;
+            }
+            it = available.lower_bound(h);
+            h = *it;
+            a[h] = x;
+            available.erase(it);
+        } else {
+            cout << a[h] << endl;
+        }
+    }
     return 0;
 }
 
