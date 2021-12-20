@@ -13,6 +13,30 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
+    int n;
+    ll x, y;
+    cin >> n >> x >> y;
+    vector<int> a(n), b(n);
+    rep(i,n) cin >> a[i];
+    rep(i,n) cin >> b[i];
+
+    int n2 = 1<<n;
+    vector<ll> dp(n2, LINF);
+    dp[0] = 0;
+    // a から 1 つずつ選んでならべていく
+    // s は a から選んだ要素の集合
+    rep(s,n2) {
+        int j = __builtin_popcount(s);
+        // a の i 番目を j 番目に並べる
+        rep(i,n) {
+            if (s>>i&1) continue;
+            ll cost = abs(a[i] - b[j]) * x;
+            // a の i 番目より前にある要素のうちすでに並べられている要素の個数 (転倒数) * y
+            cost += __builtin_popcount(s>>i) * y;
+            chmin(dp[s|1<<i], dp[s] + cost);
+        }
+    }
+    ll ans = dp[n2-1];
+    cout << ans << endl;
     return 0;
 }
-
