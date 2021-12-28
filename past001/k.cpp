@@ -12,7 +12,51 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+vector<vector<int>> g;
+vector<int> euler;
+
+void dfs(int v) {
+    euler.push_back(v);
+    for (auto &nv : g[v]) {
+        dfs(nv);
+    }
+    euler.push_back(v);
+}
+
 int main() {
+    int n;
+    cin >> n;
+    int root;
+    g.resize(n);
+    rep(i,n) {
+        int p;
+        cin >> p;
+        if (p == -1) {
+            root = i;
+        } else g[p-1].push_back(i);
+    }
+    dfs(root);
+    vector<P> order(n, make_pair(-1, -1));
+    rep(i, 2*n) {
+        int v = euler[i];
+        if (order[v].first == -1) {
+            order[v].first = i;
+        } else {
+            order[v].second = i;
+        }
+    }
+    int q;
+    cin >> q;
+    while (q--) {
+        int a, b;
+        cin >> a >> b;
+        --a, --b;
+        if (order[b].first < order[a].first && order[a].second < order[b].second) {
+            cout << "Yes" << endl;
+        } else {
+            cout << "No" << endl;
+        }
+    }
     return 0;
 }
 

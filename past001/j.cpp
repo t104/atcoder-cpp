@@ -14,33 +14,57 @@ using P = pair<int,int>;
 
 int H, W;
 int A[50][50];
-int dp[50][50][50][50];
+int dp[3][50][50];
 
 P d[] = {
-    make_pair(1, 1),
-    make_pair(1, -1),
-    make_pair(-1, 1),
-    make_pair(-1, -1)
+    make_pair(1, 0),
+    make_pair(0, 1),
+    make_pair(-1, 0),
+    make_pair(0, -1)
+};
+
+struct element {
+    int c, h, w;
+    element(int c, int h, int w) : c(c), h(h), w(w) {}
+
+    bool operator>(const element &rhs) const {
+        return rhs.c < c;
+    }
 };
 
 int main() {
     cin >> H >> W;
     rep(i,H) rep(j, W) cin >> A[i][j];
-    rep(i, 50) rep(j, 50) rep(k, 50) rep(l, 50) dp[i][j][k][l] = INF;
-    rep(i, H) rep(j, W) {
-        dp[i][j][i][j] = A[i][j];
-        for (auto &[dh, dw] : d) {
-            for (int hi = i; in(hi, 0, H); hi += dh) {
-                for (int wi = j; in(wi, 0, W); wi += dw) {
-                    if (in(wi-dw, 0, W)) chmin(dp[i][j][hi][wi], dp[i][j][hi][wi-dw] + A[hi][wi]);
-                    if (in(hi-dh, 0, H)) chmin(dp[i][j][hi][wi], dp[i][j][hi-dh][wi] + A[hi][wi]);
+    P start [3] = {
+        make_pair(H-1, 0),
+        make_pair(H-1, W-1),
+        make_pair(0, W-1)
+    };
+    rep(i, 3) rep(j, 50) rep(k, 50) dp[i][j][k] = INF;
+    rep(i, 3) {
+        auto &[sh, sw] = start[i];
+        dp[i][sh][sw] = 0;
+        priority_queue<element, vector<element>, greater<element>> que;
+        que.emplace(0, sh, sw);
+        while (que.size()) {
+            auto [ci, hi, wi] = que.top(); que.pop();
+            for (auto &[dh, dw] : d) {
+                int nh = hi + dh;
+                int nw = wi + dw;
+                if (in(nh, 0, H) && in(nw, 0, W)) {
+                    int nc = ci + A[nh][nw];
+                    if (chmin(dp[i][nh][nw], nc)) {
+                        que.emplace(nc, nh, nw);
+                    }
                 }
             }
         }
     }
     int ans = INF;
-    rep(i,H) rep(j,W) {
-        chmin(ans, dp[i][j][H-1][0] + dp[i][j][H-1][W-1] + dp[i][j][0][W-1] - 2 * A[i][j]);
+    rep(i, H) rep(j, W) {
+        int sum = 0;
+        rep(k, 3) sum += dp[k][i][j];
+        chmin(ans, sum - 2 * A[i][j]);
     }
     cout << ans << endl;
     return 0;
