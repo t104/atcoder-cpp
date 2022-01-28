@@ -12,7 +12,21 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+using mint = modint;
+const int mod = 998244353;
+
 int main() {
+    ll n, k, m;
+    cin >> n >> k >> m;
+    if (m % mod == 0) {
+        cout << 0 << endl;
+        return 0;
+    }
+    mint::set_mod(mod-1);
+    int r = mint(k).pow(n).val();
+    mint::set_mod(mod);
+    int ans = mint(m).pow(r).val();
+    cout << ans << endl;
     return 0;
 }
 
