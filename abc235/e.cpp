@@ -12,7 +12,47 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+int n, m, q;
+
+struct edge {
+    int from, to, w;
+    int id = -1;
+    edge(int from, int to, int w) : from(from), to(to), w(w) {}
+    edge(int from, int to, int w, int id) : from(from), to(to), w(w), id(id) {}
+    bool operator<(const edge &other) const {
+        return w < other.w;
+    }
+    bool operator>(const edge &other) const {
+        return other.w < w;
+    }
+};
+
 int main() {
+    cin >> n >> m >> q;
+    priority_queue<edge, vector<edge>, greater<edge>> que;
+    rep(i,m) {
+        int a, b, c;
+        cin >> a >> b >> c;
+        --a, --b;
+        que.emplace(a, b, c);
+    }
+    rep(i,q) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        --u, --v;
+        que.emplace(u, v, w, i);
+    }
+    vector<bool> ans(q);
+    dsu uf(n);
+    while (!que.empty()) {
+        edge e = que.top(); que.pop();
+        if (0 <= e.id) {
+            ans[e.id] = !uf.same(e.from, e.to);
+        } else if (!uf.same(e.from, e.to)) {
+            uf.merge(e.from, e.to);
+        }
+    }
+    rep(i,q) cout << (ans[i] ? "Yes" : "No") << endl;
     return 0;
 }
 
