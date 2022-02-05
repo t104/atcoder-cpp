@@ -12,7 +12,22 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+
 int main() {
+    int n, d;
+    cin >> n >> d;
+    vector<P> range(n);
+    rep(i,n) cin >> range[i].second >> range[i].first;
+    sort(range.begin(), range.end());
+    vector<int> r;
+    rep(i,n) {
+        auto p = lower_bound(r.begin(), r.end(), range[i].first);
+        if (p != r.end() && *p - range[i].first < d) continue;
+        auto q = lower_bound(r.begin(), r.end(), range[i].second);
+        if (q != r.end() && *q - range[i].first < d) continue;
+        r.push_back(range[i].first + d - 1);
+    }
+    cout << r.size() << endl;
     return 0;
 }
 
