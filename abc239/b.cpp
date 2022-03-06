@@ -13,6 +13,15 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
+    ll x;
+    cin >> x;
+    ll ans;
+    if (0 < x) {
+        ans = x / 10LL;
+    } else {
+        ans = x / 10LL - (0 != x % 10LL);
+    }
+    cout << ans << endl;
     return 0;
 }
 

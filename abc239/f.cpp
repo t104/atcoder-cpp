@@ -13,6 +13,37 @@ using ld = long double;
 using P = pair<int,int>;
 
 int main() {
+    int n, m;
+    cin >> n >> m;
+    vector<int> d(n);
+    dsu uf(n);
+    rep(i,n) cin >> d[i];
+    rep(i,m) {
+        int u, v;
+        cin >> u >> v;
+        --u, --v;
+        d[u]--;
+        d[v]--;
+        uf.merge(u, v);
+    }
+    vector<vector<int>> temp(n);
+    rep(i,n) {
+        if (d[i] < 0) {
+            cout << -1 << endl;
+            return 0;
+        }
+        rep(_,d[i]) temp[uf.leader(i)].push_back(i);
+    }
+
+    vector<vector<int>> c2;
+    vector<int> c1;
+    rep(i,n) {
+        if (temp[i].size() == 1) c1.push_back(temp[i][0]);
+        else if (1 < temp[i].size()) c2.push_back(temp[i]);
+    }
+
+    vector<vector<P>> ans;
+    for (auto v:c2) 
+    
     return 0;
 }
-

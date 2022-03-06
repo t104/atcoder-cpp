@@ -11,30 +11,30 @@ template<typename T1,typename T2, typename T3> inline bool in(T1 val, T2 l, T3 r
 using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
+using mint = modint998244353;
+
+mint dp[1000010][10];
 
 int main() {
-    int x1, y1, x2, y2;
-    cin >> x1 >> y1 >> x2 >> y2;
-    vector<P> d;
-    for (auto i: {-1, 1}) {
-        for (auto j: {-1, 1}) {
-            d.emplace_back(i, 2*j);
-            d.emplace_back(2*i, j);
-        }
-    }
-    for (auto [i1, j1]: d) {
-        for (auto [i2, j2]: d) {
-            int X1 = x1 + i1;
-            int Y1 = y1 + j1;
-            int X2 = x2 + i2;
-            int Y2 = y2 + j2;
-            if (X1 == X2 && Y1 == Y2) {
-                cout << "Yes" << endl;
-                return 0;
+    int n;
+    cin >> n;
+    for (int i = 1; i < 10; ++i) dp[0][i] = 1;
+    rep(i,n) {
+        for (int j = 1; j < 10; ++j) {
+            if (1 <= j-1) {
+                dp[i+1][j-1] += dp[i][j];
             }
+            if (j+1 <= 9) {
+                dp[i+1][j+1] += dp[i][j];
+            }
+            dp[i+1][j] += dp[i][j];
         }
     }
-    cout << "No" << endl;
+    mint ans = 0;
+    for (int i = 1; i < 10; ++i) {
+        ans += dp[n-1][i];
+    }
+    cout << ans.val() << endl;
     return 0;
 }
 

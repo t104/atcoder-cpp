@@ -12,11 +12,37 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
-int main() {
-    double h;
-    cin >> h;
-    cout << std::fixed << std::setprecision(15);
-    cout << sqrt(h * (12800000.0 + h)) << endl;
-    return 0;
+string s;
+
+int rec(ll h, ll w) {
+    // cerr << h << ' ' << w << endl;
+    if (h == 0) {
+        return s[w] - 'A';
+    }
+    if (w == 0) {
+        return (rec(0, w) + h) % 3;
+    }
+    if (w % 2 == 0) {
+        return (rec(h-1, w/2) + 1) % 3;
+    } else {
+        return (rec(h, w-1) + 1) % 3;
+    }
 }
 
+char solve() {
+    ll t, k;
+    cin >> t >> k;
+    k--;
+    int i = (rec(t, k) + 3) % 3;
+    return 'A' + i;
+}
+
+int main() {
+    cin >> s;
+    int q;
+    cin >> q;
+    while (q--) {
+        cout << solve() << endl;
+    }
+    return 0;
+}

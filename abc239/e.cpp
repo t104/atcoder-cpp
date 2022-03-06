@@ -12,7 +12,45 @@ using ll = long long;
 using ld = long double;
 using P = pair<int,int>;
 
+int n, q;
+vector<ll> x;
+vector<vector<int>> g;
+vector<vector<ll>> memo;
+
+void dfs(int v, int p) {
+    for (auto nv: g[v]) {
+        if (nv == p) continue;
+        dfs(nv, v);
+        for (auto i: memo[nv]) {
+            memo[v].push_back(i);
+        }
+    }
+    memo[v].push_back(x[v]);
+    sort(memo[v].rbegin(), memo[v].rend());
+    while (20 < memo[v].size()) {
+        memo[v].pop_back ();
+    }
+}
+
 int main() {
+    cin >> n >> q;
+    x.resize(n), g.resize(n), memo.resize(n);
+    rep(i,n) cin >> x[i];
+    rep(i,n-1) {
+        int u, v;
+        cin >> u >> v;
+        --u, --v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+    dfs(0, -1);
+    rep(_,q) {
+        int v, k;
+        cin >> v >> k;
+        --v, --k;
+        cout << memo[v][k] << endl;
+    }
+
     return 0;
 }
 
